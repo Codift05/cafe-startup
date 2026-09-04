@@ -25,7 +25,15 @@ function selectPickup() {
     <div class="ph-container landing-page__content">
       <!-- Brand -->
       <div class="landing-page__brand ph-animate-in">
-        <div class="landing-page__logo">☕</div>
+        <div class="landing-page__logo">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="landing-page__logo-svg">
+            <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+            <line x1="6" y1="2" x2="6" y2="4" />
+            <line x1="10" y1="2" x2="10" y2="4" />
+            <line x1="14" y1="2" x2="14" y2="4" />
+          </svg>
+        </div>
         <h1 class="landing-page__title">Philanthroffee</h1>
         <p class="landing-page__tagline">Pesan kopi favoritmu dengan mudah</p>
       </div>
@@ -34,7 +42,14 @@ function selectPickup() {
       <div class="landing-page__options ph-animate-slide">
         <!-- Dine In -->
         <div class="landing-page__option-card ph-card">
-          <div class="landing-page__option-icon">🪑</div>
+          <div class="landing-page__option-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3" />
+              <path d="M3 11v9a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z" />
+              <line x1="6" y1="18" x2="6" y2="21" />
+              <line x1="18" y1="18" x2="18" y2="21" />
+            </svg>
+          </div>
           <h2 class="landing-page__option-title">Dine In</h2>
           <p class="landing-page__option-desc">
             Scan QR code di mejamu untuk langsung memesan
@@ -58,7 +73,13 @@ function selectPickup() {
           class="landing-page__option-card landing-page__option-card--action ph-card ph-card--interactive"
           @click="selectPickup"
         >
-          <div class="landing-page__option-icon">🥤</div>
+          <div class="landing-page__option-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 11v8a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-8" />
+              <path d="M6 7h12l-1 4H7L6 7z" />
+              <line x1="12" y1="2" x2="12" y2="7" />
+            </svg>
+          </div>
           <h2 class="landing-page__option-title">Pickup</h2>
           <p class="landing-page__option-desc">
             Pesan dulu, ambil saat siap

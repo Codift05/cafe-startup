@@ -93,7 +93,11 @@ function handleAdd() {
 
     <div v-else-if="error || !product" class="ph-container" style="min-height:60dvh;display:flex;align-items:center;justify-content:center;text-align:center;">
       <div class="ph-animate-in" style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-        <p style="font-size:2.5rem;">😔</p>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ph-accent);">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
         <h2 class="ph-heading-md">Produk tidak ditemukan</h2>
         <NuxtLink to="/menu" class="ph-btn ph-btn--secondary">Kembali ke Menu</NuxtLink>
       </div>
@@ -105,7 +109,15 @@ function handleAdd() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
         </button>
         <img v-if="product.image_url" :src="product.image_url" :alt="product.name" style="width:100%;height:100%;object-fit:cover;" />
-        <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;background:var(--ph-bg-muted);">☕</div>
+        <div v-else style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--ph-bg-muted);">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--ph-primary);">
+            <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+            <line x1="6" y1="2" x2="6" y2="4" />
+            <line x1="10" y1="2" x2="10" y2="4" />
+            <line x1="14" y1="2" x2="14" y2="4" />
+          </svg>
+        </div>
       </div>
 
       <div class="ph-container ph-animate-in" style="padding-top:var(--ph-space-lg);padding-bottom:120px;">
