@@ -52,13 +52,13 @@ Acceptance criteria P0:
 
 ### P1 — Alur bisnis utama
 
-- [ ] Perbaiki `useAuth` agar memakai `supabaseAnonKey` yang benar dan mempertahankan session.
-- [ ] Pastikan idempotency order aman untuk request bersamaan dan mempunyai expiry.
-- [ ] Terapkan state transition yang sama pada aplikasi dan constraint database.
-- [ ] Implementasikan konfirmasi pembayaran kasir sesuai API contract.
-- [ ] Tangani status Midtrans `capture` berdasarkan `fraud_status`.
-- [ ] Implementasikan recovery/reconciliation untuk payment yang tertahan.
-- [ ] Pisahkan mock data sebagai mode development eksplisit; error database production harus terlihat sebagai error.
+- [x] Perbaiki `useAuth` agar memakai `supabaseAnonKey` yang benar dan mempertahankan session.
+- [x] Pastikan idempotency order aman untuk request bersamaan dan mempunyai expiry.
+- [x] Terapkan state transition yang sama pada aplikasi dan constraint database.
+- [x] Implementasikan konfirmasi pembayaran kasir sesuai API contract.
+- [x] Tangani status Midtrans `capture` berdasarkan `fraud_status`.
+- [x] Implementasikan recovery/reconciliation untuk payment yang tertahan.
+- [x] Pisahkan mock data sebagai mode development eksplisit; error database production harus terlihat sebagai error.
 - [x] Validasi batas panjang nama, telepon, catatan, jumlah item, quantity, dan aturan modifier di server.
 
 Acceptance criteria P1:
@@ -70,13 +70,13 @@ Acceptance criteria P1:
 
 ### P2 — Kelengkapan fitur dan operasional
 
-- [ ] Implementasikan API admin untuk menu, kategori, order, payment, meja, dan settings.
-- [ ] Hubungkan halaman admin ke API; hilangkan state statis/demo.
-- [ ] Implementasikan pause ordering, operating hours, dan enable/disable dine-in/pickup.
-- [ ] Implementasikan audit log untuk perubahan penting.
-- [ ] Pilih Supabase Realtime atau pertahankan polling sebagai keputusan eksplisit.
-- [ ] Tambahkan rate limiting pada endpoint sensitif dan publik berbiaya tinggi.
-- [ ] Terapkan filtering `branch_id` pada seluruh query staff/admin.
+- [x] Implementasikan API admin untuk menu, kategori, order, payment, meja, dan settings.
+- [x] Hubungkan halaman admin ke API; hilangkan state statis/demo.
+- [x] Implementasikan pause ordering, operating hours, dan enable/disable dine-in/pickup.
+- [x] Implementasikan audit log untuk perubahan penting.
+- [x] Pilih Supabase Realtime atau pertahankan polling sebagai keputusan eksplisit.
+- [x] Tambahkan rate limiting pada endpoint sensitif dan publik berbiaya tinggi.
+- [x] Terapkan filtering `branch_id` pada seluruh query staff/admin.
 
 Acceptance criteria P2:
 
@@ -87,9 +87,9 @@ Acceptance criteria P2:
 ### P3 — Kualitas, UX, dan deployment
 
 - [x] Tambahkan type checker dan script `typecheck`.
-- [ ] Tambahkan pemeriksaan minimum untuk price calculation, state transition, auth/RBAC, idempotency, dan webhook.
-- [ ] Uji loading, empty, offline, expired QR, sold-out, duplicate submit, dan payment failure states.
-- [ ] Audit aksesibilitas keyboard, label form, focus state, contrast, dan reduced motion.
+- [x] Tambahkan pemeriksaan minimum untuk price calculation, state transition, auth/RBAC, idempotency, dan webhook.
+- [x] Uji loading, empty, offline, expired QR, sold-out, duplicate submit, dan payment failure states.
+- [x] Audit aksesibilitas keyboard, label form, focus state, contrast, dan reduced motion.
 - [ ] Audit environment production: secrets, URL callback, CORS, logging, backup, dan monitoring.
 - [ ] Ukur target performa yang tercantum di TECH-SPEC.
 
