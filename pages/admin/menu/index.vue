@@ -1,122 +1,167 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 font-sans p-6 md:p-8 space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <NuxtLink to="/admin" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1 mb-1">
-          ← Dashboard Admin
-        </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">Manajemen Menu Cafe</h1>
-        <p class="text-xs text-neutral-400 mt-0.5">Atur daftar produk, harga, varian, dan status stok (Sold Out).</p>
-      </div>
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; display: flex; flex-direction: column;">
+    <!-- Top Header Bar -->
+    <header style="background: #ffffff; border-bottom: 1px solid var(--ph-border); padding: 12px 24px; position: sticky; top: 0; z-index: 30; box-shadow: var(--ph-shadow-sm);">
+      <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        
+        <!-- Brand -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: var(--ph-radius-md); background: var(--ph-primary); color: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+          </div>
+          <div>
+            <h1 style="font-family: var(--ph-font-display); font-size: 1.125rem; font-weight: 700; color: var(--ph-text); line-height: 1.2;">Philanthroffee</h1>
+            <p style="font-size: 0.75rem; color: var(--ph-text-secondary);">Coffee, Herbs &amp; Spices · Senopati</p>
+          </div>
+        </div>
 
-      <button
-        @click="showAddModal = true"
-        class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow transition-all"
-      >
-        + Tambah Menu Baru
-      </button>
-    </div>
+        <!-- Navigation Tabs -->
+        <nav style="display: flex; align-items: center; gap: 8px;">
+          <NuxtLink to="/menu" class="menu-tab-btn" style="text-decoration: none;">Menu Pelanggan</NuxtLink>
+          <NuxtLink to="/staff/kds" class="menu-tab-btn" style="text-decoration: none;">Antrean Barista (KDS)</NuxtLink>
+          <NuxtLink to="/admin/menu" class="menu-tab-btn menu-tab-btn--active" style="text-decoration: none;">Admin Stok &amp; Menu</NuxtLink>
+        </nav>
 
-    <!-- Filter & Search Bar -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 text-xs">
-      <div class="flex items-center gap-2 w-full sm:w-auto">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Cari nama produk..."
-          class="w-full sm:w-64 bg-neutral-950 border border-neutral-800 focus:border-amber-500 text-white rounded-xl px-3.5 py-2 text-xs focus:outline-none"
-        />
-      </div>
-
-      <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto">
-        <button
-          v-for="cat in categories"
-          :key="cat"
-          @click="selectedCategory = cat"
-          class="px-3 py-1.5 rounded-lg border transition-all whitespace-nowrap font-medium"
-          :class="selectedCategory === cat ? 'bg-amber-500 text-neutral-950 border-amber-500 font-bold' : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'"
-        >
-          {{ cat }}
+        <!-- Action Add -->
+        <button @click="showAddModal = true" class="ph-btn ph-btn--primary ph-btn--sm">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Tambah Menu</span>
         </button>
       </div>
-    </div>
+    </header>
 
-    <!-- Product Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-      <div
-        v-for="product in filteredProducts"
-        :key="product.id"
-        class="bg-neutral-900 border border-neutral-800 rounded-3xl p-4 space-y-3 shadow-lg hover:border-neutral-700 transition-colors relative"
-        :class="{ 'opacity-65': product.availability === 'SOLD_OUT' }"
-      >
-        <!-- Product Image Placeholder / Visual -->
-        <div class="w-full h-36 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-3xl overflow-hidden relative">
-          <img v-if="product.image_url" :src="product.image_url" alt="Produk" class="w-full h-full object-cover" />
-          <span v-else>☕</span>
+    <!-- Content Container -->
+    <main style="max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 20px;">
+      
+      <!-- Sub-header Title -->
+      <div>
+        <span class="ph-label" style="color: var(--ph-accent);">OPERASIONAL BAR &amp; KASIR</span>
+        <h2 class="ph-heading-xl" style="color: var(--ph-text); font-family: var(--ph-font-display); margin-top: 2px;">Menu &amp; Ketersediaan Stok</h2>
+        <p style="font-size: 0.875rem; color: var(--ph-text-secondary); margin-top: 4px;">Kelola katalog produk, takaran racikan, harga, dan kontrol status ketersediaan meja secara instan.</p>
+      </div>
 
-          <span
-            v-if="product.availability === 'SOLD_OUT'"
-            class="absolute top-2 right-2 px-2 py-0.5 rounded-md bg-rose-500 text-white text-[10px] font-bold uppercase tracking-wider shadow"
-          >
-            HABIS
-          </span>
+      <!-- Filter Bar -->
+      <div class="ph-card" style="padding: 16px; background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); display: flex; flex-wrap: wrap; items-center; justify-content: space-between; gap: 16px;">
+        <!-- Search Input -->
+        <div style="position: relative; width: 300px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ph-text-muted);"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input v-model="searchQuery" type="text" placeholder="Cari menu atau racikan..." style="width: 100%; padding: 8px 12px 8px 38px; border-radius: var(--ph-radius-md); border: 1px solid var(--ph-border); font-size: 0.875rem; background: var(--ph-bg-elevated); color: var(--ph-text);" />
         </div>
 
-        <!-- Details -->
-        <div>
-          <div class="text-xs text-amber-400 font-semibold uppercase tracking-wider">{{ product.category }}</div>
-          <h3 class="font-bold text-sm text-white line-clamp-1">{{ product.name }}</h3>
-          <p class="text-xs text-neutral-400 font-mono font-bold mt-1">{{ formatRp(product.base_price) }}</p>
-        </div>
-
-        <!-- Actions & Sold Out Toggle -->
-        <div class="border-t border-neutral-800 pt-3 flex items-center justify-between">
-          <span class="text-[11px] text-neutral-400 font-medium">Status Stok:</span>
-          <button
-            @click="toggleAvailability(product.id)"
-            class="px-2.5 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
-            :class="product.availability === 'AVAILABLE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'"
-          >
-            <span>{{ product.availability === 'AVAILABLE' ? '🟢 Ready' : '🔴 Sold Out' }}</span>
+        <!-- Categories -->
+        <div style="display: flex; align-items: center; gap: 6px; overflow-x: auto;">
+          <button v-for="cat in categories" :key="cat" @click="selectedCategory = cat" class="cat-pill" :class="{ 'cat-pill--active': selectedCategory === cat }">
+            {{ cat }}
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Add Product Modal -->
-    <div v-if="showAddModal" class="fixed inset-0 z-50 bg-neutral-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="w-full max-w-md bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4 shadow-2xl">
-        <h3 class="text-lg font-bold text-white">Tambah Menu Baru</h3>
+      <!-- Products Grid -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+        <div v-for="product in filteredProducts" :key="product.id" class="ph-card ph-animate-in" style="background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); padding: 16px; display: flex; flex-direction: column; gap: 12px; transition: all var(--ph-transition-fast);" :style="{ opacity: product.availability === 'SOLD_OUT' ? 0.75 : 1 }">
+          
+          <!-- Image / Visual -->
+          <div style="width: 100%; height: 160px; border-radius: var(--ph-radius-lg); background: var(--ph-bg-elevated); border: 1px solid var(--ph-border); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+            <img v-if="product.image_url" :src="product.image_url" alt="Produk" style="width: 100%; height: 100%; object-fit: cover;" />
+            <svg v-else width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--ph-primary);"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
 
-        <div class="space-y-3 text-xs">
+            <span v-if="product.availability === 'SOLD_OUT'" class="ph-badge ph-badge--danger" style="position: absolute; top: 10px; right: 10px; font-weight: 700;">
+              SOLD OUT
+            </span>
+            <span v-else class="ph-badge ph-badge--success" style="position: absolute; top: 10px; right: 10px; font-weight: 600;">
+              TERSEDIA
+            </span>
+          </div>
+
+          <!-- Description -->
+          <div style="display: flex; flex-direction: column; gap: 2px;">
+            <span class="ph-caption" style="color: var(--ph-accent); font-weight: 600;">{{ product.category }}</span>
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--ph-text);">{{ product.name }}</h3>
+            <span class="ph-price" style="font-size: 1.125rem; color: var(--ph-primary); font-weight: 700; margin-top: 4px;">{{ formatRp(product.base_price) }}</span>
+          </div>
+
+          <!-- Status Toggle Action -->
+          <div style="border-top: 1px solid var(--ph-border); padding-top: 12px; display: flex; align-items: center; justify-content: space-between; margin-top: auto;">
+            <span style="font-size: 0.8125rem; color: var(--ph-text-secondary);">Ketersediaan:</span>
+            <button @click="toggleAvailability(product.id)" class="ph-btn ph-btn--sm" :class="product.availability === 'AVAILABLE' ? 'ph-btn--secondary' : 'ph-btn--primary'" style="font-size: 0.75rem;">
+              <span>{{ product.availability === 'AVAILABLE' ? 'Tandai Sold Out' : 'Tandai Tersedia' }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal Add Product -->
+    <div v-if="showAddModal" style="position: fixed; inset: 0; z-index: 50; background: rgba(31, 27, 25, 0.5); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 16px;">
+      <div class="ph-card ph-animate-in" style="width: 100%; max-width: 440px; background: #ffffff; border-radius: var(--ph-radius-2xl); border: 1px solid var(--ph-border); padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: var(--ph-shadow-xl);">
+        <h3 class="ph-heading-lg" style="color: var(--ph-text);">Tambah Menu &amp; Racikan</h3>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.875rem;">
           <div>
-            <label class="block font-medium text-neutral-300 mb-1">Nama Produk</label>
-            <input v-model="newProduct.name" type="text" placeholder="Contoh: Sea Salt Latte" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white" />
+            <label style="display: block; font-weight: 600; color: var(--ph-text); margin-bottom: 4px;">Nama Menu</label>
+            <input v-model="newProduct.name" type="text" placeholder="Contoh: Aren Latte" style="width: 100%; padding: 8px 12px; border-radius: var(--ph-radius-md); border: 1px solid var(--ph-border); background: var(--ph-bg-elevated); color: var(--ph-text);" />
           </div>
           <div>
-            <label class="block font-medium text-neutral-300 mb-1">Kategori</label>
-            <select v-model="newProduct.category" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white">
+            <label style="display: block; font-weight: 600; color: var(--ph-text); margin-bottom: 4px;">Kategori</label>
+            <select v-model="newProduct.category" style="width: 100%; padding: 8px 12px; border-radius: var(--ph-radius-md); border: 1px solid var(--ph-border); background: var(--ph-bg-elevated); color: var(--ph-text);">
               <option value="Coffee">Coffee</option>
               <option value="Non-Coffee">Non-Coffee</option>
-              <option value="Pastry">Pastry</option>
-              <option value="Manual Brew">Manual Brew</option>
+              <option value="Herbs &amp; Spices">Herbs &amp; Spices</option>
+              <option value="Food &amp; Pastry">Food &amp; Pastry</option>
             </select>
           </div>
           <div>
-            <label class="block font-medium text-neutral-300 mb-1">Harga Dasar (Rp)</label>
-            <input v-model.number="newProduct.base_price" type="number" placeholder="28000" class="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-white" />
+            <label style="display: block; font-weight: 600; color: var(--ph-text); margin-bottom: 4px;">Harga Dasar (Rp)</label>
+            <input v-model.number="newProduct.base_price" type="number" placeholder="28000" style="width: 100%; padding: 8px 12px; border-radius: var(--ph-radius-md); border: 1px solid var(--ph-border); background: var(--ph-bg-elevated); color: var(--ph-text);" />
           </div>
         </div>
 
-        <div class="flex justify-end gap-2 pt-2">
-          <button @click="showAddModal = false" class="px-4 py-2 rounded-xl bg-neutral-800 text-neutral-300 text-xs font-medium">Batal</button>
-          <button @click="addProduct" class="px-4 py-2 rounded-xl bg-amber-500 text-neutral-950 font-bold text-xs">Simpan Menu</button>
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <button @click="showAddModal = false" class="ph-btn ph-btn--secondary">Batal</button>
+          <button @click="addProduct" class="ph-btn ph-btn--primary">Simpan Menu</button>
         </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.menu-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  border: 1px solid transparent;
+  transition: all var(--ph-transition-fast);
+}
+.menu-tab-btn:hover {
+  background: var(--ph-bg-elevated);
+  color: var(--ph-text);
+}
+.menu-tab-btn--active {
+  background: var(--ph-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+.cat-pill {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  background: var(--ph-bg-elevated);
+  border: 1px solid var(--ph-border);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cat-pill--active {
+  background: var(--ph-primary);
+  color: #ffffff;
+  border-color: var(--ph-primary);
+  font-weight: 600;
+}
+</style>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
