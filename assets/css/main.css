@@ -1,0 +1,500 @@
+/* ============================================================
+ * Philanthroffee — Design System
+ * ============================================================ */
+
+:root {
+  /* ---- Brand Colors ---- */
+  --ph-primary: #1a1a2e;
+  --ph-primary-light: #16213e;
+  --ph-accent: #e2725b;
+  --ph-accent-hover: #d4624b;
+  --ph-accent-light: rgba(226, 114, 91, 0.12);
+  --ph-gold: #c9a96e;
+  --ph-gold-light: rgba(201, 169, 110, 0.15);
+
+  /* ---- Surfaces ---- */
+  --ph-bg: #faf9f7;
+  --ph-bg-card: #ffffff;
+  --ph-bg-elevated: #ffffff;
+  --ph-bg-muted: #f3f1ed;
+  --ph-bg-overlay: rgba(26, 26, 46, 0.6);
+
+  /* ---- Text ---- */
+  --ph-text: #1a1a2e;
+  --ph-text-secondary: #6b6b7b;
+  --ph-text-muted: #9a9aaa;
+  --ph-text-inverse: #ffffff;
+
+  /* ---- Borders ---- */
+  --ph-border: #e8e6e1;
+  --ph-border-light: #f0eee9;
+
+  /* ---- Status Colors ---- */
+  --ph-success: #2d9f6f;
+  --ph-success-light: rgba(45, 159, 111, 0.12);
+  --ph-warning: #e6a23c;
+  --ph-warning-light: rgba(230, 162, 60, 0.12);
+  --ph-error: #e25555;
+  --ph-error-light: rgba(226, 85, 85, 0.12);
+  --ph-info: #5b8ce2;
+  --ph-info-light: rgba(91, 140, 226, 0.12);
+
+  /* ---- KDS Status ---- */
+  --ph-kds-new: #5b8ce2;
+  --ph-kds-preparing: #e6a23c;
+  --ph-kds-ready: #2d9f6f;
+
+  /* ---- Spacing ---- */
+  --ph-space-xs: 4px;
+  --ph-space-sm: 8px;
+  --ph-space-md: 16px;
+  --ph-space-lg: 24px;
+  --ph-space-xl: 32px;
+  --ph-space-2xl: 48px;
+
+  /* ---- Radius ---- */
+  --ph-radius-sm: 8px;
+  --ph-radius-md: 12px;
+  --ph-radius-lg: 16px;
+  --ph-radius-xl: 24px;
+  --ph-radius-full: 9999px;
+
+  /* ---- Shadows ---- */
+  --ph-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --ph-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ph-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.1);
+  --ph-shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+
+  /* ---- Typography ---- */
+  --ph-font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --ph-font-display: 'Outfit', 'Inter', system-ui, sans-serif;
+
+  /* ---- Transitions ---- */
+  --ph-transition-fast: 150ms ease;
+  --ph-transition: 250ms ease;
+  --ph-transition-slow: 400ms ease;
+}
+
+/* ---- Dark Mode (Staff/Admin) ---- */
+.dark {
+  --ph-bg: #0f0f17;
+  --ph-bg-card: #1a1a28;
+  --ph-bg-elevated: #22222f;
+  --ph-bg-muted: #15151f;
+  --ph-text: #e8e8f0;
+  --ph-text-secondary: #9a9ab0;
+  --ph-text-muted: #6b6b80;
+  --ph-border: #2a2a3a;
+  --ph-border-light: #22222f;
+}
+
+/* ============================================================
+ * Reset & Base
+ * ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--ph-font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--ph-text);
+  background-color: var(--ph-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+ * Typography Utilities
+ * ============================================================ */
+
+.ph-heading-xl {
+  font-family: var(--ph-font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.ph-heading-lg {
+  font-family: var(--ph-font-display);
+  font-size: 1.375rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.ph-heading-md {
+  font-family: var(--ph-font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.ph-body {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.ph-body-sm {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.ph-caption {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ph-text-secondary);
+}
+
+.ph-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ph-text-muted);
+}
+
+.ph-price {
+  font-family: var(--ph-font-display);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+ * Card System
+ * ============================================================ */
+
+.ph-card {
+  background: var(--ph-bg-card);
+  border-radius: var(--ph-radius-md);
+  border: 1px solid var(--ph-border-light);
+  box-shadow: var(--ph-shadow-sm);
+  transition: box-shadow var(--ph-transition), transform var(--ph-transition);
+}
+
+.ph-card:hover {
+  box-shadow: var(--ph-shadow-md);
+}
+
+.ph-card--interactive {
+  cursor: pointer;
+}
+
+.ph-card--interactive:hover {
+  transform: translateY(-1px);
+}
+
+.ph-card--interactive:active {
+  transform: translateY(0);
+}
+
+/* ============================================================
+ * Button System
+ * ============================================================ */
+
+.ph-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ph-space-sm);
+  padding: 12px 24px;
+  font-family: var(--ph-font-body);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1;
+  border: none;
+  border-radius: var(--ph-radius-md);
+  cursor: pointer;
+  transition: all var(--ph-transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ph-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ph-btn--primary {
+  background: var(--ph-accent);
+  color: var(--ph-text-inverse);
+}
+
+.ph-btn--primary:hover:not(:disabled) {
+  background: var(--ph-accent-hover);
+  box-shadow: 0 4px 16px rgba(226, 114, 91, 0.3);
+}
+
+.ph-btn--primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ph-btn--secondary {
+  background: transparent;
+  color: var(--ph-text);
+  border: 1.5px solid var(--ph-border);
+}
+
+.ph-btn--secondary:hover:not(:disabled) {
+  background: var(--ph-bg-muted);
+  border-color: var(--ph-text-muted);
+}
+
+.ph-btn--ghost {
+  background: transparent;
+  color: var(--ph-text-secondary);
+}
+
+.ph-btn--ghost:hover:not(:disabled) {
+  background: var(--ph-bg-muted);
+  color: var(--ph-text);
+}
+
+.ph-btn--sm {
+  padding: 8px 16px;
+  font-size: 0.8125rem;
+  border-radius: var(--ph-radius-sm);
+}
+
+.ph-btn--lg {
+  padding: 16px 32px;
+  font-size: 1rem;
+  border-radius: var(--ph-radius-lg);
+}
+
+.ph-btn--full {
+  width: 100%;
+}
+
+/* ============================================================
+ * Badge System
+ * ============================================================ */
+
+.ph-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: var(--ph-radius-full);
+  line-height: 1;
+}
+
+.ph-badge--success {
+  background: var(--ph-success-light);
+  color: var(--ph-success);
+}
+
+.ph-badge--warning {
+  background: var(--ph-warning-light);
+  color: var(--ph-warning);
+}
+
+.ph-badge--error {
+  background: var(--ph-error-light);
+  color: var(--ph-error);
+}
+
+.ph-badge--info {
+  background: var(--ph-info-light);
+  color: var(--ph-info);
+}
+
+.ph-badge--accent {
+  background: var(--ph-accent-light);
+  color: var(--ph-accent);
+}
+
+.ph-badge--gold {
+  background: var(--ph-gold-light);
+  color: var(--ph-gold);
+}
+
+/* ============================================================
+ * Status Dot
+ * ============================================================ */
+
+.ph-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.ph-status-dot--pulse {
+  animation: ph-pulse 2s ease-in-out infinite;
+}
+
+@keyframes ph-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.2); }
+}
+
+/* ============================================================
+ * Layout Utilities
+ * ============================================================ */
+
+.ph-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 var(--ph-space-md);
+}
+
+.ph-container--wide {
+  max-width: 1200px;
+}
+
+.ph-page {
+  min-height: 100dvh;
+  padding-bottom: 100px; /* Space for floating bar */
+}
+
+/* ============================================================
+ * Floating Bottom Bar
+ * ============================================================ */
+
+.ph-floating-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: var(--ph-space-md);
+  padding-bottom: max(var(--ph-space-md), env(safe-area-inset-bottom));
+  background: var(--ph-bg-card);
+  border-top: 1px solid var(--ph-border-light);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.ph-floating-bar__content {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+ * Sold Out Overlay
+ * ============================================================ */
+
+.ph-sold-out {
+  position: relative;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.ph-sold-out::after {
+  content: 'HABIS';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-12deg);
+  font-family: var(--ph-font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ph-error);
+  background: var(--ph-error-light);
+  padding: 4px 16px;
+  border-radius: var(--ph-radius-sm);
+  letter-spacing: 0.1em;
+  pointer-events: none;
+}
+
+/* ============================================================
+ * Animations
+ * ============================================================ */
+
+@keyframes ph-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ph-slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ph-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.ph-animate-in {
+  animation: ph-fade-in 0.3s ease-out both;
+}
+
+.ph-animate-slide {
+  animation: ph-slide-up 0.4s ease-out both;
+}
+
+/* Stagger children */
+.ph-stagger > * {
+  animation: ph-fade-in 0.3s ease-out both;
+}
+
+.ph-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.ph-stagger > *:nth-child(2) { animation-delay: 50ms; }
+.ph-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.ph-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.ph-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.ph-stagger > *:nth-child(6) { animation-delay: 250ms; }
+.ph-stagger > *:nth-child(7) { animation-delay: 300ms; }
+.ph-stagger > *:nth-child(8) { animation-delay: 350ms; }
+
+/* ============================================================
+ * Skeleton Loading
+ * ============================================================ */
+
+.ph-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--ph-bg-muted) 25%,
+    var(--ph-border-light) 50%,
+    var(--ph-bg-muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: ph-skeleton-wave 1.5s ease-in-out infinite;
+  border-radius: var(--ph-radius-sm);
+}
+
+@keyframes ph-skeleton-wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ============================================================
+ * Scrollbar
+ * ============================================================ */
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ph-border);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ph-text-muted);
+}
