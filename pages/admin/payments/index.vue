@@ -1,96 +1,122 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 font-sans p-6 md:p-8 space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; display: flex; flex-direction: column;">
+    <!-- Top Header Bar -->
+    <header style="background: #ffffff; border-bottom: 1px solid var(--ph-border); padding: 12px 24px; position: sticky; top: 0; z-index: 30; box-shadow: var(--ph-shadow-sm);">
+      <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        <!-- Brand -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: var(--ph-radius-md); background: var(--ph-primary); color: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+          </div>
+          <div>
+            <h1 style="font-family: var(--ph-font-display); font-size: 1.125rem; font-weight: 700; color: var(--ph-text); line-height: 1.2;">Philanthroffee</h1>
+            <p style="font-size: 0.75rem; color: var(--ph-text-secondary);">Pembayaran &amp; Rekonsiliasi · Senopati</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav style="display: flex; align-items: center; gap: 8px;">
+          <NuxtLink to="/admin" class="menu-tab-btn" style="text-decoration: none;">← Dashboard Admin</NuxtLink>
+          <NuxtLink to="/admin/payments" class="menu-tab-btn menu-tab-btn--active" style="text-decoration: none;">Pembayaran &amp; Rekonsiliasi</NuxtLink>
+        </nav>
+
+        <button @click="runReconciliation" :disabled="isReconciling" class="ph-btn ph-btn--primary ph-btn--sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span>{{ isReconciling ? 'Menyelaraskan...' : 'Jalankan Auto-Rekonsiliasi' }}</span>
+        </button>
+      </div>
+    </header>
+
+    <main style="max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 20px;">
       <div>
-        <NuxtLink to="/admin" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1 mb-1">
-          ← Dashboard Admin
-        </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">Kelola Pembayaran & Rekonsiliasi</h1>
-        <p class="text-xs text-neutral-400 mt-0.5">Konfirmasi pembayaran tunai kasir & penanganan status terpending.</p>
+        <span class="ph-label" style="color: var(--ph-accent);">FINANCE &amp; RECONCILIATION</span>
+        <h2 class="ph-heading-xl" style="color: var(--ph-text); font-family: var(--ph-font-display); margin-top: 2px;">Pembayaran &amp; Rekonsiliasi Kasir</h2>
+        <p style="font-size: 0.875rem; color: var(--ph-text-secondary); margin-top: 4px;">Konfirmasi pembayaran tunai kasir &amp; verifikasi transaksi otomatis dengan provider Midtrans.</p>
       </div>
 
-      <button
-        @click="runReconciliation"
-        :disabled="isReconciling"
-        class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-neutral-950 font-bold text-xs shadow-lg transition-all flex items-center gap-2 disabled:opacity-50"
-      >
-        <span v-if="isReconciling" class="animate-spin">🔄</span>
-        <span>{{ isReconciling ? 'Menyelaraskan Data...' : '⚡ Jalankan Auto-Rekonsiliasi' }}</span>
-      </button>
-    </div>
-
-    <!-- Mismatch Alert Banner -->
-    <div v-if="mismatchCount > 0" class="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-5 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-500 text-neutral-950 font-black flex items-center justify-center text-xl">
-          ⚠️
+      <!-- Mismatch Alert Banner -->
+      <div v-if="mismatchCount > 0" class="ph-card" style="padding: 16px; background: rgba(196, 123, 73, 0.08); border: 1px solid var(--ph-accent); border-radius: var(--ph-radius-xl); display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: var(--ph-radius-md); background: var(--ph-accent); color: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 0.9375rem; font-weight: 700; color: var(--ph-accent);">Terdeteksi {{ mismatchCount }} Transaksi Perlu Sinkronisasi</h3>
+            <p style="font-size: 0.8125rem; color: var(--ph-text-secondary);">Status di Midtrans lunas (PAID) namun status internal masih PENDING.</p>
+          </div>
         </div>
-        <div>
-          <h3 class="text-sm font-bold text-amber-400">Terdeteksi {{ mismatchCount }} Transaksi Perlu Sinkronisasi</h3>
-          <p class="text-xs text-neutral-300">Status di Midtrans lunas (PAID) namun status internal masih PENDING.</p>
+        <button @click="runReconciliation" class="ph-btn ph-btn--primary ph-btn--sm" style="background: var(--ph-accent);">
+          Sinkronkan Sekarang
+        </button>
+      </div>
+
+      <!-- Payments List Table -->
+      <div class="ph-card" style="background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); overflow: hidden; box-shadow: var(--ph-shadow-sm);">
+        <div style="padding: 16px; border-bottom: 1px solid var(--ph-border); font-weight: 700; color: var(--ph-text);">
+          Daftar Transaksi Pembayaran
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left;">
+            <thead>
+              <tr style="background: var(--ph-bg-elevated); border-bottom: 1px solid var(--ph-border); color: var(--ph-text-secondary); font-size: 0.75rem; text-transform: uppercase;">
+                <th style="padding: 14px 16px;">No. Order</th>
+                <th style="padding: 14px 16px;">Metode Pembayaran</th>
+                <th style="padding: 14px 16px;">Jumlah Total</th>
+                <th style="padding: 14px 16px;">Status Pembayaran</th>
+                <th style="padding: 14px 16px;">Provider Ref ID</th>
+                <th style="padding: 14px 16px; text-align: right;">Aksi Kasir</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="pay in paymentList" :key="pay.id" style="border-bottom: 1px solid var(--ph-border);">
+                <td style="padding: 14px 16px; font-weight: 700; color: var(--ph-primary); font-family: var(--ph-font-mono);">#{{ pay.order_number }}</td>
+                <td style="padding: 14px 16px; font-weight: 600; color: var(--ph-text);">
+                  <span v-if="pay.method === 'PAY_AT_CASHIER'" style="color: var(--ph-accent);">Bayar di Kasir</span>
+                  <span v-else style="color: var(--ph-primary);">{{ pay.method }}</span>
+                </td>
+                <td style="padding: 14px 16px; font-weight: 700; color: var(--ph-text); font-family: var(--ph-font-mono);">{{ formatRp(pay.amount) }}</td>
+                <td style="padding: 14px 16px;">
+                  <span class="ph-badge" :class="pay.status === 'PAID' ? 'ph-badge--success' : 'ph-badge--warning'">
+                    {{ pay.status }}
+                  </span>
+                </td>
+                <td style="padding: 14px 16px; font-family: var(--ph-font-mono); font-size: 0.8125rem; color: var(--ph-text-secondary);">{{ pay.provider_tx || '-' }}</td>
+                <td style="padding: 14px 16px; text-align: right;">
+                  <button v-if="pay.method === 'PAY_AT_CASHIER' && pay.status === 'PENDING'" @click="confirmCashPayment(pay.id)" class="ph-btn ph-btn--primary ph-btn--sm" style="font-size: 0.75rem;">
+                    Confirm Cash Paid
+                  </button>
+                  <span v-else style="color: var(--ph-text-muted); font-size: 0.8125rem;">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <button
-        @click="runReconciliation"
-        class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl"
-      >
-        Sinkronkan Sekarang
-      </button>
-    </div>
-
-    <!-- Payments List Table -->
-    <div class="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-xl">
-      <div class="p-4 border-b border-neutral-800 font-bold text-sm text-white">
-        Daftar Transaksi Pembayaran
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-neutral-950/80 border-b border-neutral-800 text-neutral-400 uppercase tracking-wider">
-              <th class="p-4">No. Order</th>
-              <th class="p-4">Metode Pembayaran</th>
-              <th class="p-4">Jumlah Total</th>
-              <th class="p-4">Status Pembayaran</th>
-              <th class="p-4">Provider Ref ID</th>
-              <th class="p-4 text-right">Aksi Kasir</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-neutral-800">
-            <tr v-for="pay in paymentList" :key="pay.id" class="hover:bg-neutral-800/40 transition-colors">
-              <td class="p-4 font-mono font-bold text-amber-400 text-sm">#{{ pay.order_number }}</td>
-              <td class="p-4 font-semibold text-white">
-                <span v-if="pay.method === 'PAY_AT_CASHIER'" class="text-amber-400">💵 Bayar di Kasir</span>
-                <span v-else class="text-emerald-400">📱 {{ pay.method }}</span>
-              </td>
-              <td class="p-4 font-mono font-bold text-white">{{ formatRp(pay.amount) }}</td>
-              <td class="p-4">
-                <span
-                  class="px-2.5 py-1 rounded-full font-bold text-[10px]"
-                  :class="pay.status === 'PAID' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'"
-                >
-                  {{ pay.status }}
-                </span>
-              </td>
-              <td class="p-4 font-mono text-[11px] text-neutral-400">{{ pay.provider_tx || '-' }}</td>
-              <td class="p-4 text-right">
-                <button
-                  v-if="pay.method === 'PAY_AT_CASHIER' && pay.status === 'PENDING'"
-                  @click="confirmCashPayment(pay.id)"
-                  class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs shadow transition-all"
-                >
-                  Confirm Cash Paid
-                </button>
-                <span v-else class="text-neutral-500 text-[11px]">—</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </main>
   </div>
 </template>
+
+<style scoped>
+.menu-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  border: 1px solid transparent;
+  transition: all var(--ph-transition-fast);
+}
+.menu-tab-btn:hover {
+  background: var(--ph-bg-elevated);
+  color: var(--ph-text);
+}
+.menu-tab-btn--active {
+  background: var(--ph-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+</style>
 
 <script setup lang="ts">
 import { ref } from 'vue'

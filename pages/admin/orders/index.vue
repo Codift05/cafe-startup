@@ -1,81 +1,136 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 font-sans p-6 md:p-8 space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; display: flex; flex-direction: column;">
+    <!-- Top Header Bar -->
+    <header style="background: #ffffff; border-bottom: 1px solid var(--ph-border); padding: 12px 24px; position: sticky; top: 0; z-index: 30; box-shadow: var(--ph-shadow-sm);">
+      <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        <!-- Brand -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: var(--ph-radius-md); background: var(--ph-primary); color: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+          </div>
+          <div>
+            <h1 style="font-family: var(--ph-font-display); font-size: 1.125rem; font-weight: 700; color: var(--ph-text); line-height: 1.2;">Philanthroffee</h1>
+            <p style="font-size: 0.75rem; color: var(--ph-text-secondary);">Kelola Pesanan · Senopati</p>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav style="display: flex; align-items: center; gap: 8px;">
+          <NuxtLink to="/admin" class="menu-tab-btn" style="text-decoration: none;">← Dashboard Admin</NuxtLink>
+          <NuxtLink to="/admin/orders" class="menu-tab-btn menu-tab-btn--active" style="text-decoration: none;">Kelola Pesanan</NuxtLink>
+        </nav>
+
+        <button @click="fetchOrders" class="ph-btn ph-btn--secondary ph-btn--sm">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span>Refresh Data</span>
+        </button>
+      </div>
+    </header>
+
+    <main style="max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; padding: 24px; display: flex; flex-direction: column; gap: 20px;">
       <div>
-        <NuxtLink to="/admin" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1 mb-1">
-          ← Dashboard Admin
-        </NuxtLink>
-        <h1 class="text-2xl font-bold text-white">Kelola Seluruh Pesanan</h1>
-        <p class="text-xs text-neutral-400 mt-0.5">Daftar transaksi pesanan masuk, status pembuatan, dan riwayat pesanan.</p>
+        <span class="ph-label" style="color: var(--ph-accent);">RIWAYAT &amp; DAFTAR PESANAN</span>
+        <h2 class="ph-heading-xl" style="color: var(--ph-text); font-family: var(--ph-font-display); margin-top: 2px;">Kelola Seluruh Pesanan</h2>
+        <p style="font-size: 0.875rem; color: var(--ph-text-secondary); margin-top: 4px;">Pantau daftar transaksi pesanan masuk, status pembuatan, dan riwayat pesanan.</p>
       </div>
-      <button @click="fetchOrders" class="px-3.5 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-700 text-xs font-semibold">
-        🔄 Refresh Data
-      </button>
-    </div>
 
-    <!-- Filter Bar -->
-    <div class="flex flex-wrap items-center gap-3 bg-neutral-900 border border-neutral-800 rounded-2xl p-4 text-xs">
-      <span class="text-neutral-400 font-bold uppercase tracking-wider">Filter Status:</span>
-      <button
-        v-for="s in statusOptions"
-        :key="s.value"
-        @click="selectedStatus = s.value"
-        class="px-3 py-1.5 rounded-lg border transition-all font-medium"
-        :class="selectedStatus === s.value ? 'bg-amber-500 text-neutral-950 border-amber-500 font-bold' : 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:border-neutral-700'"
-      >
-        {{ s.label }}
-      </button>
-    </div>
-
-    <!-- Order List Table -->
-    <div class="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-xl">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs border-collapse">
-          <thead>
-            <tr class="bg-neutral-950/80 border-b border-neutral-800 text-neutral-400 uppercase tracking-wider">
-              <th class="p-4">No. Order</th>
-              <th class="p-4">Tipe & Meja</th>
-              <th class="p-4">Customer</th>
-              <th class="p-4">Total</th>
-              <th class="p-4">Status Pesanan</th>
-              <th class="p-4">Waktu</th>
-              <th class="p-4 text-right">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-neutral-800">
-            <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-neutral-800/40 transition-colors">
-              <td class="p-4 font-mono font-bold text-amber-400 text-sm">#{{ order.order_number }}</td>
-              <td class="p-4">
-                <span class="px-2 py-0.5 rounded font-bold text-[10px]" :class="order.order_type === 'DINE_IN' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'">
-                  {{ order.order_type === 'DINE_IN' ? `Dine In (Meja ${order.table_number || '-'})` : 'Pickup' }}
-                </span>
-              </td>
-              <td class="p-4 font-medium text-white">{{ order.customer_name }}</td>
-              <td class="p-4 font-mono font-bold text-white">{{ formatRp(order.total) }}</td>
-              <td class="p-4">
-                <span class="px-2.5 py-1 rounded-full font-bold text-[10px]" :class="getStatusBadgeClass(order.status)">
-                  {{ order.status }}
-                </span>
-              </td>
-              <td class="p-4 text-neutral-400 text-[11px]">{{ new Date(order.created_at).toLocaleTimeString() }}</td>
-              <td class="p-4 text-right">
-                <NuxtLink :to="`/order/${order.order_number}`" class="text-amber-400 hover:underline font-semibold text-[11px]">
-                  Detail Tracking →
-                </NuxtLink>
-              </td>
-            </tr>
-            <tr v-if="filteredOrders.length === 0">
-              <td colspan="7" class="p-8 text-center text-neutral-500">
-                Tidak ada pesanan ditemukan
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Filter Bar -->
+      <div class="ph-card" style="padding: 16px; background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); display: flex; flex-wrap: wrap; items-center; gap: 12px;">
+        <span style="font-size: 0.8125rem; font-weight: 700; color: var(--ph-text-secondary); text-transform: uppercase;">Filter Status:</span>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button v-for="s in statusOptions" :key="s.value" @click="selectedStatus = s.value" class="cat-pill" :class="{ 'cat-pill--active': selectedStatus === s.value }">
+            {{ s.label }}
+          </button>
+        </div>
       </div>
-    </div>
+
+      <!-- Table Container -->
+      <div class="ph-card" style="background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); overflow: hidden; box-shadow: var(--ph-shadow-sm);">
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left;">
+            <thead>
+              <tr style="background: var(--ph-bg-elevated); border-bottom: 1px solid var(--ph-border); color: var(--ph-text-secondary); font-size: 0.75rem; text-transform: uppercase;">
+                <th style="padding: 14px 16px;">No. Order</th>
+                <th style="padding: 14px 16px;">Tipe &amp; Meja</th>
+                <th style="padding: 14px 16px;">Customer</th>
+                <th style="padding: 14px 16px;">Total</th>
+                <th style="padding: 14px 16px;">Status Pesanan</th>
+                <th style="padding: 14px 16px;">Waktu</th>
+                <th style="padding: 14px 16px; text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in filteredOrders" :key="order.id" style="border-bottom: 1px solid var(--ph-border);">
+                <td style="padding: 14px 16px; font-weight: 700; color: var(--ph-primary); font-family: var(--ph-font-mono);">#{{ order.order_number }}</td>
+                <td style="padding: 14px 16px;">
+                  <span class="ph-badge ph-badge--accent">
+                    {{ order.order_type === 'DINE_IN' ? `Dine In (Meja ${order.table_number || '-'})` : 'Pickup' }}
+                  </span>
+                </td>
+                <td style="padding: 14px 16px; font-weight: 600; color: var(--ph-text);">{{ order.customer_name }}</td>
+                <td style="padding: 14px 16px; font-weight: 700; color: var(--ph-text); font-family: var(--ph-font-mono);">{{ formatRp(order.total) }}</td>
+                <td style="padding: 14px 16px;">
+                  <span class="ph-badge" :class="getStatusBadgeClass(order.status)">
+                    {{ order.status }}
+                  </span>
+                </td>
+                <td style="padding: 14px 16px; color: var(--ph-text-secondary); font-size: 0.8125rem;">{{ new Date(order.created_at).toLocaleTimeString() }}</td>
+                <td style="padding: 14px 16px; text-align: right;">
+                  <NuxtLink :to="`/order/${order.order_number}`" style="color: var(--ph-accent); font-weight: 600; text-decoration: none; font-size: 0.8125rem;">
+                    Detail Tracking →
+                  </NuxtLink>
+                </td>
+              </tr>
+              <tr v-if="filteredOrders.length === 0">
+                <td colspan="7" style="padding: 48px 16px; text-align: center; color: var(--ph-text-muted);">
+                  Tidak ada pesanan ditemukan
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
   </div>
 </template>
+
+<style scoped>
+.menu-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  border: 1px solid transparent;
+  transition: all var(--ph-transition-fast);
+}
+.menu-tab-btn:hover {
+  background: var(--ph-bg-elevated);
+  color: var(--ph-text);
+}
+.menu-tab-btn--active {
+  background: var(--ph-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+.cat-pill {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  background: var(--ph-bg-elevated);
+  border: 1px solid var(--ph-border);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cat-pill--active {
+  background: var(--ph-primary);
+  color: #ffffff;
+  border-color: var(--ph-primary);
+  font-weight: 600;
+}
+</style>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
@@ -100,12 +155,12 @@ const filteredOrders = computed(() => {
 
 function getStatusBadgeClass(status: string) {
   switch (status) {
-    case 'WAITING_PAYMENT': return 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-    case 'PAID': return 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-    case 'PREPARING': return 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-    case 'READY': return 'bg-purple-500/10 text-purple-400 border border-purple-500/20'
-    case 'COMPLETED': return 'bg-neutral-800 text-neutral-400'
-    default: return 'bg-neutral-800 text-neutral-300'
+    case 'WAITING_PAYMENT': return 'ph-badge--warning'
+    case 'PAID': return 'ph-badge--success'
+    case 'PREPARING': return 'ph-badge--info'
+    case 'READY': return 'ph-badge--success'
+    case 'COMPLETED': return 'ph-badge--secondary'
+    default: return 'ph-badge--secondary'
   }
 }
 
