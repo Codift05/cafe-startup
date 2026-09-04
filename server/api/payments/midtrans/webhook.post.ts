@@ -2,7 +2,7 @@
 // POST /api/payments/midtrans/webhook — Midtrans Notification Endpoint
 // ============================================================
 
-import crypto from 'node.js:crypto'
+import crypto from 'node:crypto'
 import { getSupabaseAdmin } from '~/server/utils/supabase'
 
 export default defineEventHandler(async (event) => {
