@@ -1,224 +1,250 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans">
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; display: flex; flex-direction: column;">
     <!-- Top Header Bar -->
-    <header class="bg-neutral-900 border-b border-neutral-800 px-6 py-3 flex items-center justify-between sticky top-0 z-20">
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-lg bg-amber-500 text-neutral-950 font-black flex items-center justify-center text-lg">
-          K
+    <header style="background: #ffffff; border-bottom: 1px solid var(--ph-border); padding: 12px 24px; position: sticky; top: 0; z-index: 30; box-shadow: var(--ph-shadow-sm);">
+      <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+        
+        <!-- Brand -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 36px; height: 36px; border-radius: var(--ph-radius-md); background: var(--ph-primary); color: #ffffff; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
+          </div>
+          <div>
+            <h1 style="font-family: var(--ph-font-display); font-size: 1.125rem; font-weight: 700; color: var(--ph-text); line-height: 1.2;">Philanthroffee</h1>
+            <p style="font-size: 0.75rem; color: var(--ph-text-secondary);">Coffee, Herbs &amp; Spices · Senopati</p>
+          </div>
         </div>
-        <div>
-          <h1 class="text-base font-bold leading-tight">Barista KDS — Kitchen Display System</h1>
-          <p class="text-[11px] text-neutral-400">Philanthroffee Branch Main • Realtime Queue</p>
-        </div>
-      </div>
 
-      <div class="flex items-center gap-4 text-xs">
-        <div class="flex items-center gap-2 bg-neutral-950 border border-neutral-800 px-3 py-1.5 rounded-full text-neutral-300">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Live Updates Active</span>
+        <!-- Navigation Tabs -->
+        <nav style="display: flex; align-items: center; gap: 8px;">
+          <NuxtLink to="/menu" class="menu-tab-btn" style="text-decoration: none;">Menu Pelanggan</NuxtLink>
+          <NuxtLink to="/staff/kds" class="menu-tab-btn menu-tab-btn--active" style="text-decoration: none;">Antrean Barista (KDS)</NuxtLink>
+          <NuxtLink to="/admin/menu" class="menu-tab-btn" style="text-decoration: none;">Admin Stok &amp; Menu</NuxtLink>
+        </nav>
+
+        <!-- Mode Indicator -->
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--ph-bg-elevated); border: 1px solid var(--ph-border); border-radius: 999px; font-size: 0.8125rem; color: var(--ph-text-secondary);">
+            <span class="ph-status-dot ph-status-dot--pulse" style="background: var(--ph-success);"></span>
+            <span>Terhubung Realtime</span>
+          </div>
+          <button @click="fetchOrders" class="ph-btn ph-btn--secondary ph-btn--sm" style="padding: 6px 14px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            <span>Refresh</span>
+          </button>
         </div>
-        <button
-          @click="fetchOrders"
-          class="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-medium transition-colors"
-        >
-          🔄 Refresh
-        </button>
       </div>
     </header>
 
+    <!-- Sub-header Title -->
+    <div style="max-width: 1400px; margin: 0 auto; width: 100%; padding: 24px 24px 8px;">
+      <span class="ph-label" style="color: var(--ph-accent);">OPERASIONAL BAR &amp; KASIR</span>
+      <h2 class="ph-heading-xl" style="color: var(--ph-text); font-family: var(--ph-font-display); margin-top: 2px;">KDS Barista Station</h2>
+      <p style="font-size: 0.875rem; color: var(--ph-text-secondary); margin-top: 4px;">Kelola antrean racikan minuman, pesanan makanan, dan status sajian meja secara realtime.</p>
+    </div>
+
     <!-- Main Kanban 3-Column Display -->
-    <main class="flex-1 p-6 grid grid-cols-1 md:grid-cols-3 gap-6 items-start overflow-x-auto">
+    <main style="max-width: 1400px; margin: 0 auto; width: 100%; flex: 1; padding: 16px 24px 32px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start;">
+      
       <!-- Column 1: BARU (PAID) -->
-      <section class="bg-neutral-900/60 border border-neutral-800 rounded-3xl p-4 flex flex-col gap-4 min-h-[calc(100vh-120px)]">
-        <div class="flex items-center justify-between px-2 pb-2 border-b border-neutral-800">
-          <div class="flex items-center gap-2 font-bold text-amber-400 text-sm">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <h2>BARU (PAID)</h2>
+      <section class="ph-card" style="padding: 16px; background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); display: flex; flex-direction: column; gap: 16px; min-height: 540px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--ph-border);">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ph-primary); font-size: 0.9375rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--ph-primary); display: inline-block;"></span>
+            <span>Pesanan Baru</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-bold font-mono">
-            {{ baruOrders.length }}
+          <span class="ph-badge ph-badge--info" style="padding: 4px 10px; font-size: 0.8125rem;">
+            {{ baruOrders.length }} Tiket
           </span>
         </div>
 
-        <div class="space-y-4 flex-1">
-          <div
-            v-for="order in baruOrders"
-            :key="order.id"
-            class="bg-neutral-900 border border-amber-500/30 rounded-2xl p-4 space-y-3 shadow-lg relative hover:border-amber-500 transition-colors"
-          >
-            <!-- Card Header -->
-            <div class="flex items-start justify-between">
+        <div style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+          <div v-for="order in baruOrders" :key="order.id" class="ph-card ph-animate-in" style="padding: 16px; background: var(--ph-bg-elevated); border: 1.5px solid var(--ph-border); border-radius: var(--ph-radius-lg); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <div>
-                <span class="text-xs font-mono font-bold text-amber-400 text-base">#{{ order.order_number }}</span>
-                <p class="text-xs font-semibold text-neutral-300">{{ order.customer_name }}</p>
+                <span class="ph-price" style="font-size: 1.125rem; font-weight: 700; color: var(--ph-primary);">#{{ order.order_number }}</span>
+                <p v-if="order.customer_name" style="font-size: 0.8125rem; font-weight: 600; color: var(--ph-text); margin-top: 2px;">{{ order.customer_name }}</p>
               </div>
-              <div class="text-right">
-                <span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="order.order_type === 'DINE_IN' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'">
-                  {{ order.order_type === 'DINE_IN' ? `MEJA ${order.table_number || '-'}` : 'PICKUP' }}
+              <div style="text-align: right;">
+                <span class="ph-badge ph-badge--accent">
+                  {{ order.order_type === 'DINE_IN' ? `Meja ${order.table_number || '-'}` : 'Pickup' }}
                 </span>
-                <p class="text-[10px] text-neutral-400 mt-1 font-mono">{{ getElapsedTime(order.created_at) }}m yang lalu</p>
+                <p style="font-size: 0.75rem; color: var(--ph-text-secondary); margin-top: 4px;">{{ getElapsedTime(order.created_at) }}m lalu</p>
               </div>
             </div>
 
-            <!-- Item List -->
-            <div class="border-t border-b border-neutral-800 py-2.5 space-y-2">
-              <div v-for="item in order.items" :key="item.id" class="text-xs">
-                <div class="font-bold text-white flex items-baseline gap-1.5">
-                  <span class="text-amber-400 text-sm font-black">{{ item.quantity }}x</span>
-                  <span>{{ item.product_name }}</span>
-                  <span v-if="item.variant_name" class="text-[10px] text-neutral-400 font-normal">({{ item.variant_name }})</span>
+            <!-- Items -->
+            <div style="border-top: 1px solid var(--ph-border); border-bottom: 1px solid var(--ph-border); padding: 10px 0; display: flex; flex-direction: column; gap: 8px;">
+              <div v-for="item in order.items" :key="item.id" style="font-size: 0.875rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 600; color: var(--ph-text);">
+                  <span><strong style="color: var(--ph-primary);">{{ item.quantity }}x</strong> {{ item.product_name }}</span>
+                  <span v-if="item.variant_name" style="font-size: 0.75rem; color: var(--ph-text-secondary); font-weight: 400;">{{ item.variant_name }}</span>
                 </div>
-                <div v-if="item.modifiers.length > 0" class="pl-5 text-[11px] text-neutral-400 flex flex-wrap gap-1 mt-0.5">
-                  <span v-for="mod in item.modifiers" :key="mod" class="bg-neutral-800 px-1.5 py-0.2 rounded text-neutral-300">
+                <div v-if="item.modifiers && item.modifiers.length > 0" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+                  <span v-for="mod in item.modifiers" :key="mod" class="ph-caption" style="background: #ffffff; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ph-border);">
                     + {{ mod }}
                   </span>
                 </div>
-                <div v-if="item.notes" class="pl-5 text-[11px] text-amber-300/90 italic mt-0.5">
-                  Catatan: "{{ item.notes }}"
-                </div>
+                <p v-if="item.notes" style="font-size: 0.75rem; color: var(--ph-accent); font-style: italic; margin-top: 4px;">
+                  "{{ item.notes }}"
+                </p>
               </div>
             </div>
 
-            <!-- Action Button -->
-            <button
-              @click="updateStatus(order.id, 'PREPARING')"
-              class="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs shadow transition-all flex items-center justify-center gap-1.5"
-            >
-              <span>👨‍🍳 MULAI BUAT</span>
+            <button @click="updateStatus(order.id, 'PREPARING')" class="ph-btn ph-btn--primary ph-btn--full">
+              <span>Mulai Buat Tiket Ini</span>
             </button>
           </div>
 
-          <div v-if="baruOrders.length === 0" class="text-center py-12 text-neutral-500 text-xs">
-            Tidak ada order baru
+          <div v-if="baruOrders.length === 0" style="text-align: center; padding: 48px 0; color: var(--ph-text-muted); font-size: 0.875rem;">
+            Belum ada pesanan baru
           </div>
         </div>
       </section>
 
       <!-- Column 2: DIBUAT (PREPARING) -->
-      <section class="bg-neutral-900/60 border border-neutral-800 rounded-3xl p-4 flex flex-col gap-4 min-h-[calc(100vh-120px)]">
-        <div class="flex items-center justify-between px-2 pb-2 border-b border-neutral-800">
-          <div class="flex items-center gap-2 font-bold text-blue-400 text-sm">
-            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
-            <h2>DIBUAT (PREPARING)</h2>
+      <section class="ph-card" style="padding: 16px; background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); display: flex; flex-direction: column; gap: 16px; min-height: 540px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--ph-border);">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ph-accent); font-size: 0.9375rem;">
+            <span class="ph-status-dot ph-status-dot--pulse" style="background: var(--ph-accent);"></span>
+            <span>Sedang Dibuat</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold font-mono">
-            {{ sedangDibuatOrders.length }}
+          <span class="ph-badge ph-badge--warning" style="padding: 4px 10px; font-size: 0.8125rem;">
+            {{ sedangDibuatOrders.length }} Tiket
           </span>
         </div>
 
-        <div class="space-y-4 flex-1">
-          <div
-            v-for="order in sedangDibuatOrders"
-            :key="order.id"
-            class="bg-neutral-900 border border-blue-500/40 rounded-2xl p-4 space-y-3 shadow-lg relative hover:border-blue-400 transition-colors"
-          >
-            <!-- Card Header -->
-            <div class="flex items-start justify-between">
+        <div style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+          <div v-for="order in sedangDibuatOrders" :key="order.id" class="ph-card ph-animate-in" style="padding: 16px; background: var(--ph-bg-elevated); border: 1.5px solid var(--ph-accent); border-radius: var(--ph-radius-lg); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <div>
-                <span class="text-xs font-mono font-bold text-blue-400 text-base">#{{ order.order_number }}</span>
-                <p class="text-xs font-semibold text-neutral-300">{{ order.customer_name }}</p>
+                <span class="ph-price" style="font-size: 1.125rem; font-weight: 700; color: var(--ph-accent);">#{{ order.order_number }}</span>
+                <p v-if="order.customer_name" style="font-size: 0.8125rem; font-weight: 600; color: var(--ph-text); margin-top: 2px;">{{ order.customer_name }}</p>
               </div>
-              <div class="text-right">
-                <span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="order.order_type === 'DINE_IN' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'">
-                  {{ order.order_type === 'DINE_IN' ? `MEJA ${order.table_number || '-'}` : 'PICKUP' }}
+              <div style="text-align: right;">
+                <span class="ph-badge ph-badge--accent">
+                  {{ order.order_type === 'DINE_IN' ? `Meja ${order.table_number || '-'}` : 'Pickup' }}
                 </span>
-                <p class="text-[10px] text-blue-400 mt-1 font-mono font-bold">{{ getElapsedTime(order.created_at) }}m diproses</p>
+                <p style="font-size: 0.75rem; color: var(--ph-accent); font-weight: 600; margin-top: 4px;">{{ getElapsedTime(order.created_at) }}m diproses</p>
               </div>
             </div>
 
-            <!-- Item List -->
-            <div class="border-t border-b border-neutral-800 py-2.5 space-y-2">
-              <div v-for="item in order.items" :key="item.id" class="text-xs">
-                <div class="font-bold text-white flex items-baseline gap-1.5">
-                  <span class="text-blue-400 text-sm font-black">{{ item.quantity }}x</span>
-                  <span>{{ item.product_name }}</span>
-                  <span v-if="item.variant_name" class="text-[10px] text-neutral-400 font-normal">({{ item.variant_name }})</span>
+            <!-- Items -->
+            <div style="border-top: 1px solid var(--ph-border); border-bottom: 1px solid var(--ph-border); padding: 10px 0; display: flex; flex-direction: column; gap: 8px;">
+              <div v-for="item in order.items" :key="item.id" style="font-size: 0.875rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 600; color: var(--ph-text);">
+                  <span><strong style="color: var(--ph-accent);">{{ item.quantity }}x</strong> {{ item.product_name }}</span>
+                  <span v-if="item.variant_name" style="font-size: 0.75rem; color: var(--ph-text-secondary); font-weight: 400;">{{ item.variant_name }}</span>
                 </div>
-                <div v-if="item.modifiers.length > 0" class="pl-5 text-[11px] text-neutral-400 flex flex-wrap gap-1 mt-0.5">
-                  <span v-for="mod in item.modifiers" :key="mod" class="bg-neutral-800 px-1.5 py-0.2 rounded text-neutral-300">
+                <div v-if="item.modifiers && item.modifiers.length > 0" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+                  <span v-for="mod in item.modifiers" :key="mod" class="ph-caption" style="background: #ffffff; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--ph-border);">
                     + {{ mod }}
                   </span>
                 </div>
-                <div v-if="item.notes" class="pl-5 text-[11px] text-amber-300/90 italic mt-0.5">
-                  Catatan: "{{ item.notes }}"
-                </div>
+                <p v-if="item.notes" style="font-size: 0.75rem; color: var(--ph-accent); font-style: italic; margin-top: 4px;">
+                  "{{ item.notes }}"
+                </p>
               </div>
             </div>
 
-            <!-- Action Button -->
-            <button
-              @click="updateStatus(order.id, 'READY')"
-              class="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow transition-all flex items-center justify-center gap-1.5"
-            >
-              <span>🔔 TANDAI SIAP</span>
+            <button @click="updateStatus(order.id, 'READY')" class="ph-btn ph-btn--primary ph-btn--full" style="background: var(--ph-accent);">
+              <span>Tandai Siap</span>
             </button>
           </div>
 
-          <div v-if="sedangDibuatOrders.length === 0" class="text-center py-12 text-neutral-500 text-xs">
+          <div v-if="sedangDibuatOrders.length === 0" style="text-align: center; padding: 48px 0; color: var(--ph-text-muted); font-size: 0.875rem;">
             Belum ada pesanan yang sedang dibuat
           </div>
         </div>
       </section>
 
       <!-- Column 3: SIAP (READY) -->
-      <section class="bg-neutral-900/60 border border-neutral-800 rounded-3xl p-4 flex flex-col gap-4 min-h-[calc(100vh-120px)]">
-        <div class="flex items-center justify-between px-2 pb-2 border-b border-neutral-800">
-          <div class="flex items-center gap-2 font-bold text-emerald-400 text-sm">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-            <h2>SIAP (READY)</h2>
+      <section class="ph-card" style="padding: 16px; background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border); display: flex; flex-direction: column; gap: 16px; min-height: 540px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--ph-border);">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ph-success); font-size: 0.9375rem;">
+            <span style="width: 10px; height: 10px; border-radius: 50%; background: var(--ph-success); display: inline-block;"></span>
+            <span>Siap Disajikan</span>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-bold font-mono">
-            {{ siapOrders.length }}
+          <span class="ph-badge ph-badge--success" style="padding: 4px 10px; font-size: 0.8125rem;">
+            {{ siapOrders.length }} Tiket
           </span>
         </div>
 
-        <div class="space-y-4 flex-1">
-          <div
-            v-for="order in siapOrders"
-            :key="order.id"
-            class="bg-neutral-900 border border-emerald-500/40 rounded-2xl p-4 space-y-3 shadow-lg relative hover:border-emerald-400 transition-colors"
-          >
-            <!-- Card Header -->
-            <div class="flex items-start justify-between">
+        <div style="display: flex; flex-direction: column; gap: 16px; flex: 1;">
+          <div v-for="order in siapOrders" :key="order.id" class="ph-card ph-animate-in" style="padding: 16px; background: var(--ph-bg-elevated); border: 1.5px solid var(--ph-success); border-radius: var(--ph-radius-lg); display: flex; flex-direction: column; gap: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
               <div>
-                <span class="text-xs font-mono font-bold text-emerald-400 text-base">#{{ order.order_number }}</span>
-                <p class="text-xs font-semibold text-neutral-300">{{ order.customer_name }}</p>
+                <span class="ph-price" style="font-size: 1.125rem; font-weight: 700; color: var(--ph-success);">#{{ order.order_number }}</span>
+                <p v-if="order.customer_name" style="font-size: 0.8125rem; font-weight: 600; color: var(--ph-text); margin-top: 2px;">{{ order.customer_name }}</p>
               </div>
-              <div class="text-right">
-                <span class="px-2 py-0.5 rounded text-[11px] font-bold" :class="order.order_type === 'DINE_IN' ? 'bg-amber-500/20 text-amber-400' : 'bg-blue-500/20 text-blue-400'">
-                  {{ order.order_type === 'DINE_IN' ? `MEJA ${order.table_number || '-'}` : 'PICKUP' }}
+              <div style="text-align: right;">
+                <span class="ph-badge ph-badge--success">
+                  {{ order.order_type === 'DINE_IN' ? `Meja ${order.table_number || '-'}` : 'Pickup' }}
                 </span>
-                <p class="text-[10px] text-emerald-400 mt-1 font-mono font-bold">Siap Disajikan</p>
+                <p style="font-size: 0.75rem; color: var(--ph-success); font-weight: 600; margin-top: 4px;">Siap Diantar</p>
               </div>
             </div>
 
-            <!-- Item List -->
-            <div class="border-t border-b border-neutral-800 py-2.5 space-y-2">
-              <div v-for="item in order.items" :key="item.id" class="text-xs">
-                <div class="font-bold text-white flex items-baseline gap-1.5">
-                  <span class="text-emerald-400 text-sm font-black">{{ item.quantity }}x</span>
-                  <span>{{ item.product_name }}</span>
+            <!-- Items -->
+            <div style="border-top: 1px solid var(--ph-border); border-bottom: 1px solid var(--ph-border); padding: 10px 0; display: flex; flex-direction: column; gap: 8px;">
+              <div v-for="item in order.items" :key="item.id" style="font-size: 0.875rem;">
+                <div style="display: flex; justify-content: space-between; font-weight: 600; color: var(--ph-text);">
+                  <span><strong style="color: var(--ph-success);">{{ item.quantity }}x</strong> {{ item.product_name }}</span>
                 </div>
               </div>
             </div>
 
-            <!-- Action Button -->
-            <button
-              @click="updateStatus(order.id, 'COMPLETED')"
-              class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition-all flex items-center justify-center gap-1.5"
-            >
-              <span>✅ SELESAIKAN</span>
+            <button @click="updateStatus(order.id, 'COMPLETED')" class="ph-btn ph-btn--secondary ph-btn--full">
+              <span>Selesaikan Pesanan</span>
             </button>
           </div>
 
-          <div v-if="siapOrders.length === 0" class="text-center py-12 text-neutral-500 text-xs">
+          <div v-if="siapOrders.length === 0" style="text-align: center; padding: 48px 0; color: var(--ph-text-muted); font-size: 0.875rem;">
             Belum ada pesanan yang siap
           </div>
         </div>
       </section>
     </main>
+
+    <!-- Equipment Status Bar at bottom -->
+    <footer style="background: #ffffff; border-top: 1px solid var(--ph-border); padding: 12px 24px; font-size: 0.8125rem; color: var(--ph-text-secondary);">
+      <div style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <span>Espresso Bar 01</span>
+          <span>·</span>
+          <span>Grinder Mahlkönig EK43s (Dial 2.4)</span>
+          <span>·</span>
+          <span>Boiler 93.2°C / 9.0 Bar</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="ph-status-dot ph-status-dot--pulse" style="background: var(--ph-success);"></span>
+          <span>Sinkronisasi POS &amp; KDS Realtime: Terhubung Aktif</span>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
+
+<style scoped>
+.menu-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ph-text-secondary);
+  border: 1px solid transparent;
+  transition: all var(--ph-transition-fast);
+}
+.menu-tab-btn:hover {
+  background: var(--ph-bg-elevated);
+  color: var(--ph-text);
+}
+.menu-tab-btn--active {
+  background: var(--ph-primary);
+  color: #ffffff !important;
+  font-weight: 600;
+}
+</style>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
