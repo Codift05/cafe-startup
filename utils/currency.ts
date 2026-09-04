@@ -32,3 +32,7 @@ export function formatRupiahCompact(amount: number): string {
   }
   return `Rp${amount}`
 }
+
+/** Alias formatRp for convenience */
+export const formatRp = formatRupiah
+
