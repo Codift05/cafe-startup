@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * Menu Page — Taste Skill Anti-Slop Specification
- * Clean Modern Layout (No heavy outer background wrappers / pelapis)
+ * Menu Page — Earthy Botanical Design System
+ * Fluid Responsive Architecture (Desktop 2-Column Grid & Mobile 1-Column with Floating Cart)
  */
 
 import type { CategoryWithProducts, ProductSummary } from '~/types/product'
@@ -11,11 +11,8 @@ import { formatRupiah } from '~/utils/currency'
 
 useHead({ title: 'Menu — Philanthroffee' })
 
-const { cart, itemCount, total, addItem, updateQuantity, removeItem } = useCart()
+const { cart, itemCount, total, addItem, updateQuantity } = useCart()
 const router = useRouter()
-
-// View mode: 'desktop' or 'mobile'
-const viewMode = ref<'desktop' | 'mobile'>('desktop')
 
 // Search & category filter states
 const searchQuery = ref('')
@@ -98,32 +95,16 @@ const orderLabel = computed(() => {
   }
   return 'Pickup / Takeaway'
 })
-
-// Barista recommendations
-const recommendedItems = computed(() => {
-  const allProds: ProductSummary[] = []
-  categories.value.forEach(c => allProds.push(...c.products))
-  return allProds.slice(0, 2)
-})
 </script>
 
 <template>
   <div class="menu-page ph-page">
     
-    <!-- Viewport Shell -->
-    <div :class="['menu-viewport-wrapper', { 'menu-viewport-wrapper--mobile-frame': viewMode === 'mobile' }]">
+    <div class="menu-container">
       
-      <!-- Mobile Phone Notch / Speaker Mockup (Mobile Mode Only) -->
-      <div v-if="viewMode === 'mobile'" class="mobile-frame-speaker">
-        <div class="speaker-bar"></div>
-        <div class="camera-dot"></div>
-      </div>
-
-      <!-- Clean Header without Heavy Outer Panel / Background Pelapis -->
+      <!-- Clean Header without Fake Mode Switchers or Outer Pelapis -->
       <header class="clean-menu-header">
         <div class="header-main-row">
-          
-          <!-- Brand & Context -->
           <div class="header-brand-group">
             <NuxtLink to="/" class="back-link-btn" aria-label="Beranda">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -133,41 +114,10 @@ const recommendedItems = computed(() => {
             <h1 class="catalog-title">Catalog Menu</h1>
             <span class="ph-badge ph-badge--accent">{{ orderLabel }}</span>
           </div>
-
-          <!-- View Mode Switcher (Inline Pills) -->
-          <div class="view-mode-pills">
-            <button
-              :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'desktop' }]"
-              @click="viewMode = 'desktop'"
-              title="Tampilan Desktop"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="3" width="20" height="14" rx="2" />
-                <line x1="8" y1="21" x2="16" y2="21" />
-                <line x1="12" y1="17" x2="12" y2="21" />
-              </svg>
-              <span>Desktop</span>
-            </button>
-
-            <button
-              :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'mobile' }]"
-              @click="viewMode = 'mobile'"
-              title="Tampilan Mobile"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="5" y="2" width="14" height="20" rx="3" />
-                <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3" />
-              </svg>
-              <span>Mobile</span>
-            </button>
-          </div>
-
         </div>
 
-        <!-- Controls: Compact Search & Category Chips -->
+        <!-- Controls: Search & Category Chips -->
         <div class="clean-controls-row">
-          
-          <!-- Search Bar -->
           <div class="clean-search-box">
             <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8" />
@@ -182,7 +132,6 @@ const recommendedItems = computed(() => {
             <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''">✕</button>
           </div>
 
-          <!-- Category Filter Chips -->
           <nav v-if="categories.length > 0" class="clean-category-tabs" aria-label="Kategori menu">
             <button
               v-for="cat in categories"
@@ -193,19 +142,16 @@ const recommendedItems = computed(() => {
               {{ cat.name }}
             </button>
           </nav>
-
         </div>
       </header>
 
       <!-- Main Content Area -->
       <main class="menu-content">
-        
-        <div :class="['menu-layout-grid', { 'menu-layout-grid--desktop': viewMode === 'desktop' }]">
+        <div class="menu-layout-grid">
 
           <!-- Product Catalog Grid -->
           <div class="catalog-primary-col">
             
-            <!-- Category Title & Counter -->
             <div class="section-title-row">
               <h2 class="section-heading">
                 {{ searchQuery ? `Hasil Pencarian ("${searchQuery}")` : (categories.find(c => c.slug === activeCategory)?.name || 'Semua Menu') }}
@@ -214,7 +160,7 @@ const recommendedItems = computed(() => {
             </div>
 
             <!-- Loading Skeleton -->
-            <div v-if="pending" class="menu-grid" :class="{ 'menu-grid--mobile': viewMode === 'mobile' }">
+            <div v-if="pending" class="menu-grid">
               <div v-for="i in 6" :key="i" class="product-card product-card--skeleton">
                 <div class="ph-skeleton skeleton-img"></div>
                 <div class="skeleton-body">
@@ -241,14 +187,13 @@ const recommendedItems = computed(() => {
             </div>
 
             <!-- Product Items Grid -->
-            <div v-else :class="['menu-grid', { 'menu-grid--mobile': viewMode === 'mobile' }]">
+            <div v-else class="menu-grid">
               <div
                 v-for="product in filteredProducts"
                 :key="product.id"
                 :class="['product-card', { 'product-card--disabled': product.availability === ProductAvailability.SOLD_OUT }]"
                 @click="openProduct(product)"
               >
-                <!-- Image Container -->
                 <div class="product-card__image-container">
                   <img
                     v-if="product.image_url"
@@ -270,7 +215,6 @@ const recommendedItems = computed(() => {
                   <span v-if="product.availability === ProductAvailability.SOLD_OUT" class="product-badge product-badge--soldout">HABIS</span>
                 </div>
 
-                <!-- Product Body -->
                 <div class="product-card__body">
                   <h3 class="product-card__name">{{ product.name }}</h3>
                   <p v-if="product.description" class="product-card__desc">{{ product.description }}</p>
@@ -296,15 +240,14 @@ const recommendedItems = computed(() => {
 
           </div>
 
-          <!-- Desktop Sidebar Cart -->
-          <div v-if="viewMode === 'desktop'" class="catalog-sidebar-col">
+          <!-- Desktop Sidebar Cart (Hidden automatically on mobile via CSS) -->
+          <div class="catalog-sidebar-col">
             <div class="ph-card sidebar-cart-card">
               <div class="sidebar-cart__header">
                 <h3 class="sidebar-cart__title">Pesanan Anda</h3>
                 <span class="ph-badge ph-badge--accent">{{ itemCount }} item</span>
               </div>
 
-              <!-- Empty Cart State -->
               <div v-if="cart.items.length === 0" class="sidebar-cart__empty">
                 <div class="empty-icon-box">
                   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--ph-primary);">
@@ -317,7 +260,6 @@ const recommendedItems = computed(() => {
                 <p class="empty-desc">Pilih menu favorit Anda dari katalog untuk mulai memesan.</p>
               </div>
 
-              <!-- Cart Items List -->
               <div v-else class="sidebar-cart__list">
                 <div v-for="item in cart.items" :key="item.cartItemId" class="sidebar-cart-item">
                   <div class="cart-item__info">
@@ -336,7 +278,6 @@ const recommendedItems = computed(() => {
                   </div>
                 </div>
 
-                <!-- Subtotal & Checkout -->
                 <div class="sidebar-cart__footer">
                   <div class="subtotal-row">
                     <span>Subtotal</span>
@@ -355,11 +296,10 @@ const recommendedItems = computed(() => {
           </div>
 
         </div>
-
       </main>
 
-      <!-- Floating Cart Bar (Mobile Frame Mode Only) -->
-      <div v-if="viewMode === 'mobile' && itemCount > 0" class="mobile-floating-cart">
+      <!-- Mobile Floating Cart Bar (Visible automatically on mobile screens) -->
+      <div v-if="itemCount > 0" class="mobile-floating-cart">
         <div class="floating-cart-content" @click="goToCart">
           <div class="cart-badge-group">
             <span class="cart-count-pill">{{ itemCount }}</span>
@@ -384,58 +324,19 @@ const recommendedItems = computed(() => {
 </template>
 
 <style scoped>
-/* Base Layout */
 .menu-page {
   min-height: 100dvh;
   background: var(--ph-bg);
 }
 
-.menu-viewport-wrapper {
+.menu-container {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 var(--ph-space-md);
-  transition: all 0.3s ease;
 }
 
-.menu-viewport-wrapper--mobile-frame {
-  max-width: 414px;
-  margin: 1rem auto;
-  padding: 0;
-  border: 3px solid var(--ph-border);
-  border-radius: 36px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-  background: var(--ph-bg);
-  overflow: hidden;
-  position: relative;
-  min-height: 800px;
-}
-
-.mobile-frame-speaker {
-  height: 24px;
-  background: var(--ph-bg-card);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--ph-border-light);
-}
-
-.speaker-bar {
-  width: 44px;
-  height: 4px;
-  background: var(--ph-border);
-  border-radius: 2px;
-}
-
-.camera-dot {
-  width: 6px;
-  height: 6px;
-  background: var(--ph-border);
-  border-radius: 50%;
-}
-
-/* Streamlined Clean Header (Zero Outer Container Wrapper / Pelapis) */
+/* Header */
 .clean-menu-header {
   padding: var(--ph-space-md) 0 var(--ph-space-xs);
   display: flex;
@@ -474,37 +375,6 @@ const recommendedItems = computed(() => {
   color: var(--ph-text);
 }
 
-.view-mode-pills {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--ph-bg-elevated);
-  padding: 3px;
-  border-radius: var(--ph-radius-full);
-  border: 1px solid var(--ph-border);
-}
-
-.mode-pill-btn {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border: none;
-  border-radius: var(--ph-radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--ph-text-secondary);
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--ph-transition-fast);
-}
-
-.mode-pill-btn--active {
-  background: var(--ph-primary);
-  color: #fff;
-}
-
-/* Controls: Search & Category Filter */
 .clean-controls-row {
   display: flex;
   flex-direction: column;
@@ -591,11 +461,17 @@ const recommendedItems = computed(() => {
   padding-bottom: var(--ph-space-xl);
 }
 
-.menu-layout-grid--desktop {
+/* Responsive Grid Architecture */
+.menu-layout-grid {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr;
   gap: var(--ph-space-lg);
-  align-items: start;
+}
+
+@media (min-width: 992px) {
+  .menu-layout-grid {
+    grid-template-columns: 1fr 320px;
+  }
 }
 
 .section-title-row {
@@ -620,12 +496,14 @@ const recommendedItems = computed(() => {
 /* Menu Grid */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--ph-space-md);
 }
 
-.menu-grid--mobile {
-  grid-template-columns: 1fr;
+@media (max-width: 576px) {
+  .menu-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .product-card {
@@ -746,7 +624,17 @@ const recommendedItems = computed(() => {
   border-color: var(--ph-primary);
 }
 
-/* Sidebar Cart */
+/* Sidebar Cart (Desktop Only) */
+.catalog-sidebar-col {
+  display: none;
+}
+
+@media (min-width: 992px) {
+  .catalog-sidebar-col {
+    display: block;
+  }
+}
+
 .sidebar-cart-card {
   padding: var(--ph-space-md);
   background: var(--ph-bg-card);
@@ -880,13 +768,19 @@ const recommendedItems = computed(() => {
   gap: 6px;
 }
 
-/* Mobile Floating Cart */
+/* Mobile Floating Cart (Visible on screens < 992px) */
 .mobile-floating-cart {
-  position: absolute;
+  position: fixed;
   bottom: 16px;
   left: 16px;
   right: 16px;
   z-index: 50;
+}
+
+@media (min-width: 992px) {
+  .mobile-floating-cart {
+    display: none;
+  }
 }
 
 .floating-cart-content {
