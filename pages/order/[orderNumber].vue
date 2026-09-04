@@ -1,139 +1,123 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 pb-20">
-    <!-- Header -->
-    <header class="sticky top-0 z-30 bg-neutral-950/80 backdrop-blur-lg border-b border-neutral-800 px-4 py-3.5 flex items-center justify-between">
-      <button @click="router.push('/menu')" class="text-xs text-neutral-400 hover:text-white flex items-center gap-1">
-        <span>← Menu</span>
-      </button>
-      <h1 class="text-base font-bold tracking-tight">Status Pesanan</h1>
-      <div class="w-12"></div>
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; padding-bottom: 120px;">
+    <!-- Top Nav Header -->
+    <header style="position: sticky; top: 0; z-index: 40; background: var(--ph-bg); border-bottom: 1px solid var(--ph-border); padding: 14px 0;">
+      <div class="ph-container" style="display: flex; align-items: center; justify-content: space-between;">
+        <NuxtLink to="/menu" style="display: flex; align-items: center; gap: 6px; font-size: 0.875rem; font-weight: 600; color: var(--ph-primary); text-decoration: none;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Menu</span>
+        </NuxtLink>
+        <span class="ph-label" style="color: var(--ph-text-secondary); letter-spacing: 0.05em;">NOTA & PELACAKAN PESANAN</span>
+        <div style="width: 48px;"></div>
+      </div>
     </header>
 
-    <main class="max-w-lg mx-auto px-4 py-6 space-y-6">
+    <main class="ph-container" style="padding-top: var(--ph-space-lg); display: flex; flex-direction: column; gap: var(--ph-space-lg);">
       <!-- Loading State -->
-      <div v-if="isLoading" class="py-16 text-center space-y-4">
-        <div class="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p class="text-xs text-neutral-400">Memuat status pesanan...</p>
+      <div v-if="isLoading" style="padding: 64px 0; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <div class="ph-skeleton" style="width: 48px; height: 48px; border-radius: 50%;" />
+        <p style="font-size: 0.875rem; color: var(--ph-text-secondary);">Memuat status pesanan...</p>
       </div>
 
-      <!-- Order Tracking Details -->
-      <div v-else-if="order" class="space-y-6">
-        <!-- Main Status Hero Card -->
-        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 text-center space-y-4 shadow-xl relative overflow-hidden">
-          <div class="absolute -top-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl"></div>
-
-          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
-            <span v-if="order.status === 'WAITING_PAYMENT'">⏳</span>
-            <span v-else-if="order.status === 'PAID'">✅</span>
-            <span v-else-if="order.status === 'PREPARING'">👨‍🍳</span>
-            <span v-else-if="order.status === 'READY'">🎉</span>
-            <span v-else-if="order.status === 'COMPLETED'">✨</span>
-            <span v-else>❌</span>
+      <!-- Order Tracking Content -->
+      <div v-else-if="order" style="display: flex; flex-direction: column; gap: var(--ph-space-lg);">
+        
+        <!-- Order Header Banner -->
+        <div class="ph-card ph-animate-in" style="padding: var(--ph-space-lg); background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border);">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+            <div>
+              <span class="ph-label">ORDER ID</span>
+              <h1 class="ph-heading-lg" style="color: var(--ph-text); font-family: var(--ph-font-display);">#{{ order.order_number }}</h1>
+            </div>
+            <span class="ph-badge ph-badge--accent" style="padding: 6px 14px; font-size: 0.8125rem;">
+              {{ order.order_type === 'DINE_IN' ? `Dine In · Meja ${order.table_number || '-'}` : 'Pickup' }}
+            </span>
           </div>
 
-          <div class="space-y-1">
-            <h2 class="text-xl font-bold text-white">{{ getStatusTitle(order.status) }}</h2>
-            <p class="text-xs text-neutral-400">{{ getStatusDesc(order.status) }}</p>
-          </div>
-
-          <div class="inline-block px-4 py-1.5 rounded-full bg-neutral-950 border border-neutral-800 text-xs font-mono text-amber-400 font-bold">
-            #{{ order.order_number }} • {{ order.order_type === 'DINE_IN' ? `Meja ${order.table_number || '-'}` : 'Pickup' }}
+          <div style="display: flex; align-items: center; gap: 12px; padding: 14px; background: var(--ph-bg-elevated); border-radius: var(--ph-radius-lg); border: 1px solid var(--ph-border);">
+            <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--ph-primary); color: #ffffff; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <div>
+              <h2 style="font-size: 1rem; font-weight: 700; color: var(--ph-text);">{{ getStatusTitle(order.status) }}</h2>
+              <p style="font-size: 0.8125rem; color: var(--ph-text-secondary);">{{ getStatusDesc(order.status) }}</p>
+            </div>
           </div>
         </div>
 
         <!-- Vertical Timeline Card -->
-        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-5">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Timeline Pesanan</h3>
+        <div class="ph-card ph-animate-slide" style="padding: var(--ph-space-lg); background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border);">
+          <h3 class="ph-label" style="margin-bottom: 20px; color: var(--ph-text-muted);">TIMELINE STATUS REALTIME</h3>
 
-          <div class="space-y-6 relative pl-6 border-l-2 border-neutral-800">
-            <!-- Step 1: Order Masuk -->
-            <div class="relative">
-              <div
-                class="absolute -left-[31px] top-0 w-4 h-4 rounded-full border-2 transition-all"
-                :class="isStepReached('WAITING_PAYMENT') ? 'bg-amber-500 border-amber-400' : 'bg-neutral-900 border-neutral-700'"
-              ></div>
-              <h4 class="text-sm font-semibold" :class="isStepReached('WAITING_PAYMENT') ? 'text-white' : 'text-neutral-500'">
-                Pesanan Dibuat
-              </h4>
-              <p class="text-xs text-neutral-400">Pesanan berhasil tercatat di sistem Philanthroffee.</p>
+          <div style="position: relative; padding-left: 28px; border-left: 2px solid var(--ph-border); display: flex; flex-direction: column; gap: 24px;">
+            <!-- Step 1: Dibuat -->
+            <div style="position: relative;">
+              <div :style="{ position: 'absolute', left: '-37px', top: '2px', width: '16px', height: '16px', borderRadius: '50%', background: isStepReached('WAITING_PAYMENT') ? 'var(--ph-primary)' : 'var(--ph-border)', border: '3px solid #ffffff' }"></div>
+              <h4 style="font-size: 0.9375rem; font-weight: 600; color: var(--ph-text);">Pesanan Masuk</h4>
+              <p style="font-size: 0.8125rem; color: var(--ph-text-secondary); margin-top: 2px;">Diterima oleh sistem meja bar.</p>
             </div>
 
-            <!-- Step 2: Paid -->
-            <div class="relative">
-              <div
-                class="absolute -left-[31px] top-0 w-4 h-4 rounded-full border-2 transition-all"
-                :class="isStepReached('PAID') ? 'bg-amber-500 border-amber-400' : 'bg-neutral-900 border-neutral-700'"
-              ></div>
-              <h4 class="text-sm font-semibold" :class="isStepReached('PAID') ? 'text-white' : 'text-neutral-500'">
-                Pembayaran Terkonfirmasi
-              </h4>
-              <p class="text-xs text-neutral-400">Pembayaran terverifikasi, masuk ke antrean dapur.</p>
+            <!-- Step 2: Pembayaran -->
+            <div style="position: relative;">
+              <div :style="{ position: 'absolute', left: '-37px', top: '2px', width: '16px', height: '16px', borderRadius: '50%', background: isStepReached('PAID') ? 'var(--ph-primary)' : 'var(--ph-border)', border: '3px solid #ffffff' }"></div>
+              <h4 style="font-size: 0.9375rem; font-weight: 600; color: var(--ph-text);">Pembayaran Berhasil</h4>
+              <p style="font-size: 0.8125rem; color: var(--ph-text-secondary); margin-top: 2px;">Verifikasi transaksi terkonfirmasi.</p>
             </div>
 
-            <!-- Step 3: Preparing -->
-            <div class="relative">
-              <div
-                class="absolute -left-[31px] top-0 w-4 h-4 rounded-full border-2 transition-all"
-                :class="isStepReached('PREPARING') ? 'bg-amber-500 border-amber-400' : 'bg-neutral-900 border-neutral-700'"
-              ></div>
-              <h4 class="text-sm font-semibold" :class="isStepReached('PREPARING') ? 'text-white' : 'text-neutral-500'">
-                Sedang Dibuat Barista
-              </h4>
-              <p class="text-xs text-neutral-400">Barista sedang meracik minuman Anda.</p>
+            <!-- Step 3: Dibuat Barista -->
+            <div style="position: relative;">
+              <div :style="{ position: 'absolute', left: '-37px', top: '2px', width: '16px', height: '16px', borderRadius: '50%', background: isStepReached('PREPARING') ? 'var(--ph-accent)' : 'var(--ph-border)', border: '3px solid #ffffff' }"></div>
+              <h4 style="font-size: 0.9375rem; font-weight: 600; color: isStepReached('PREPARING') ? 'var(--ph-accent)' : 'var(--ph-text)';">Sedang Dibuat Barista</h4>
+              <p style="font-size: 0.8125rem; color: var(--ph-text-secondary); margin-top: 2px;">Barista sedang meracik minuman Anda.</p>
             </div>
 
-            <!-- Step 4: Ready -->
-            <div class="relative">
-              <div
-                class="absolute -left-[31px] top-0 w-4 h-4 rounded-full border-2 transition-all"
-                :class="isStepReached('READY') ? 'bg-emerald-500 border-emerald-400' : 'bg-neutral-900 border-neutral-700'"
-              ></div>
-              <h4 class="text-sm font-semibold" :class="isStepReached('READY') ? 'text-emerald-400' : 'text-neutral-500'">
-                Siap Diambil / Diantar
-              </h4>
-              <p class="text-xs text-neutral-400">Pesanan Anda telah siap!</p>
+            <!-- Step 4: Siap -->
+            <div style="position: relative;">
+              <div :style="{ position: 'absolute', left: '-37px', top: '2px', width: '16px', height: '16px', borderRadius: '50%', background: isStepReached('READY') ? 'var(--ph-success)' : 'var(--ph-border)', border: '3px solid #ffffff' }"></div>
+              <h4 style="font-size: 0.9375rem; font-weight: 600; color: isStepReached('READY') ? 'var(--ph-success)' : 'var(--ph-text)';">Siap Diantar / Diambil</h4>
+              <p style="font-size: 0.8125rem; color: var(--ph-text-secondary); margin-top: 2px;">Staf kafe akan membawakan pesanan ke meja.</p>
             </div>
           </div>
         </div>
 
-        <!-- Order Items Detail Card -->
-        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-4">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-400">Detail Pesanan</h3>
+        <!-- Rincian Pesanan Card -->
+        <div class="ph-card" style="padding: var(--ph-space-lg); background: #ffffff; border-radius: var(--ph-radius-xl); border: 1px solid var(--ph-border);">
+          <h3 class="ph-label" style="margin-bottom: 16px; color: var(--ph-text-muted);">DETAIL ITEM KASIR</h3>
 
-          <div class="divide-y divide-neutral-800">
-            <div v-for="item in order.items" :key="item.id" class="py-3 first:pt-0 last:pb-0 space-y-1">
-              <div class="flex justify-between items-start text-sm">
-                <span class="font-medium text-neutral-200">
-                  <span class="font-bold text-amber-400 mr-1.5">{{ item.quantity }}x</span>
-                  {{ item.product_name }}
+          <div style="display: flex; flex-direction: column; gap: 12px; border-bottom: 1px solid var(--ph-border); padding-bottom: 16px;">
+            <div v-for="item in order.items" :key="item.id" style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span style="font-size: 0.9375rem; font-weight: 600; color: var(--ph-text);">
+                  {{ item.quantity }}x {{ item.product_name }}
                 </span>
-                <span class="font-mono text-neutral-300 font-semibold">{{ formatRp(item.subtotal) }}</span>
+                <p v-if="item.variant_name" style="font-size: 0.75rem; color: var(--ph-text-secondary); margin-top: 2px;">
+                  {{ item.variant_name }}
+                </p>
+                <div v-if="item.modifiers && item.modifiers.length > 0" style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+                  <span v-for="mod in item.modifiers" :key="mod.name" class="ph-caption" style="background: var(--ph-bg-muted); padding: 2px 8px; border-radius: 999px;">
+                    {{ mod.name }}
+                  </span>
+                </div>
               </div>
-              <div v-if="item.variant_name" class="text-xs text-neutral-400 pl-6">
-                Variant: {{ item.variant_name }}
-              </div>
-              <div v-if="item.modifiers.length > 0" class="text-xs text-neutral-400 pl-6 flex flex-wrap gap-1">
-                <span v-for="mod in item.modifiers" :key="mod.name" class="bg-neutral-800 text-neutral-300 px-1.5 py-0.5 rounded text-[11px]">
-                  {{ mod.name }}
-                </span>
-              </div>
+              <span class="ph-price" style="font-size: 0.9375rem; color: var(--ph-text); font-weight: 600;">{{ formatRp(item.subtotal) }}</span>
             </div>
           </div>
 
-          <div class="border-t border-neutral-800 pt-3 flex justify-between font-bold text-sm text-amber-400">
-            <span>Total Pembayaran</span>
-            <span class="font-mono">{{ formatRp(order.total) }}</span>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 16px;">
+            <span style="font-size: 0.9375rem; font-weight: 700; color: var(--ph-text);">Total Tagihan</span>
+            <span class="ph-price" style="font-size: 1.25rem; font-weight: 700; color: var(--ph-accent);">{{ formatRp(order.total) }}</span>
           </div>
         </div>
 
-        <!-- Pay Button fallback if WAITING_PAYMENT -->
-        <div v-if="order.status === 'WAITING_PAYMENT'">
-          <button
-            @click="router.push(`/payment/${order.order_number}`)"
-            class="w-full py-3.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-sm shadow-lg transition-all"
-          >
-            Lanjutkan Pembayaran Sekarang
-          </button>
+        <!-- Action Button if Waiting Payment -->
+        <div v-if="order.status === 'WAITING_PAYMENT'" class="ph-floating-bar">
+          <div class="ph-floating-bar__content">
+            <button @click="router.push(`/payment/${order.order_number}`)" class="ph-btn ph-btn--primary ph-btn--full ph-btn--lg">
+              Bayar Sekarang
+            </button>
+          </div>
         </div>
       </div>
     </main>

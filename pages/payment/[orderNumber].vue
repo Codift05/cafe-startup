@@ -1,81 +1,74 @@
 <template>
-  <div class="min-h-screen bg-neutral-950 text-neutral-100 p-4 flex flex-col items-center justify-center">
-    <div class="w-full max-w-md bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-6 text-center shadow-2xl">
+  <div class="ph-page" style="background: var(--ph-bg); min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;">
+    <div class="ph-card ph-animate-in" style="width: 100%; max-width: 440px; background: #ffffff; border-radius: var(--ph-radius-2xl); border: 1px solid var(--ph-border); padding: var(--ph-space-xl); display: flex; flex-direction: column; gap: var(--ph-space-lg); text-align: center; box-shadow: var(--ph-shadow-xl);">
+      
       <!-- Loading State -->
-      <div v-if="isLoading" class="py-12 space-y-4">
-        <div class="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p class="text-sm text-neutral-400">Memuat detail pembayaran...</p>
+      <div v-if="isLoading" style="padding: 48px 0; display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <div class="ph-skeleton" style="width: 48px; height: 48px; border-radius: 50%;" />
+        <p style="font-size: 0.875rem; color: var(--ph-text-secondary);">Memuat detail pembayaran...</p>
       </div>
 
       <!-- Payment Content -->
-      <div v-else-if="order" class="space-y-6">
-        <!-- Status Header -->
-        <div class="space-y-2">
-          <div class="w-16 h-16 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mx-auto font-bold">
-            💳
+      <div v-else-if="order" style="display: flex; flex-direction: column; gap: var(--ph-space-lg);">
+        
+        <!-- Header -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--ph-bg-elevated); border: 1.5px solid var(--ph-border); color: var(--ph-primary); display: flex; align-items: center; justify-content: center; margin-bottom: 4px;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
           </div>
-          <h1 class="text-xl font-bold">Selesaikan Pembayaran</h1>
-          <p class="text-xs text-neutral-400">
-            Nomor Pesanan: <span class="font-mono text-amber-400 font-bold">#{{ order.order_number }}</span>
-          </p>
+          <span class="ph-label" style="color: var(--ph-accent);">PEMBAYARAN DIGITAL</span>
+          <h1 class="ph-heading-lg" style="color: var(--ph-text);">Order #{{ order.order_number }}</h1>
         </div>
 
-        <!-- Total Amount -->
-        <div class="bg-neutral-950 border border-neutral-800 rounded-2xl p-4 space-y-1">
-          <p class="text-xs text-neutral-400 uppercase tracking-wider">Total Tagihan</p>
-          <p class="text-2xl font-bold font-mono text-amber-400">{{ formatRp(order.total) }}</p>
+        <!-- Total Box -->
+        <div style="background: var(--ph-bg-elevated); border: 1px solid var(--ph-border); border-radius: var(--ph-radius-xl); padding: 16px; display: flex; flex-direction: column; gap: 4px;">
+          <span class="ph-caption" style="color: var(--ph-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;">Total Tagihan</span>
+          <span class="ph-price" style="font-size: 2rem; font-weight: 700; color: var(--ph-primary);">{{ formatRp(order.total) }}</span>
         </div>
 
         <!-- Mode: Pay at Cashier -->
-        <div v-if="order.payment?.method === 'PAY_AT_CASHIER'" class="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-5 text-left space-y-3">
-          <div class="flex items-center gap-2 font-bold text-amber-400 text-sm">
-            <span>🏪</span> Pembayaran di Kasir (Cash / Tunai)
+        <div v-if="order.payment?.method === 'PAY_AT_CASHIER'" style="background: var(--ph-bg-muted); border: 1px solid var(--ph-border); border-radius: var(--ph-radius-lg); padding: 16px; text-align: left; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--ph-primary); font-size: 0.875rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Pembayaran di Kasir (Tunai / POS)</span>
           </div>
-          <ol class="text-xs text-neutral-300 space-y-2 list-decimal pl-4">
-            <li>Tunjukkan kode pesanan <strong class="font-mono text-amber-400">#{{ order.order_number }}</strong> ke kasir Philanthroffee.</li>
-            <li>Lakukan pembayaran secara tunai atau metode fisik kasir.</li>
-            <li>Kasir akan mengonfirmasi pembayaran Anda dan pesanan langsung masuk ke dapur!</li>
+          <ol style="font-size: 0.8125rem; color: var(--ph-text-secondary); padding-left: 20px; line-height: 1.5; display: flex; flex-direction: column; gap: 6px;">
+            <li>Sebutkan kode pesanan <strong style="color: var(--ph-primary);">#{{ order.order_number }}</strong> ke kasir.</li>
+            <li>Lakukan pembayaran tunai atau QRIS fisik di meja kasir.</li>
+            <li>Kasir mengonfirmasi pesanan &amp; otomatis masuk antrean KDS.</li>
           </ol>
         </div>
 
-        <!-- Mode: Digital QRIS / E-Wallet -->
-        <div v-else class="space-y-4">
-          <div class="p-4 bg-neutral-950 border border-neutral-800 rounded-2xl space-y-3">
-            <p class="text-xs text-neutral-300 font-semibold">Scan QRIS atau bayar via E-Wallet</p>
-            <button
-              @click="openSnap"
-              class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-neutral-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2"
-            >
-              <span>Bayar Sekarang via Midtrans</span>
-              <span>→</span>
-            </button>
-          </div>
+        <!-- Mode: Midtrans QRIS -->
+        <div v-else style="display: flex; flex-direction: column; gap: 14px;">
+          <button @click="openSnap" class="ph-btn ph-btn--primary ph-btn--full ph-btn--lg" style="background: var(--ph-accent); border: none;">
+            <span>Bayar via Midtrans / QRIS</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
 
         <!-- Status Auto Checker Alert -->
-        <div class="p-3 bg-neutral-950/60 border border-neutral-800 rounded-xl flex items-center justify-between text-xs text-neutral-400">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        <div style="padding: 10px 14px; background: var(--ph-bg-elevated); border: 1px solid var(--ph-border); border-radius: var(--ph-radius-md); display: flex; align-items: center; justify-content: space-between; font-size: 0.8125rem; color: var(--ph-text-secondary);">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="ph-status-dot ph-status-dot--pulse" style="background: var(--ph-success);"></span>
             <span>Mengecek status pembayaran...</span>
           </div>
-          <button @click="checkStatus" class="text-amber-400 hover:underline text-[11px]">Check Now</button>
+          <button @click="checkStatus" style="color: var(--ph-primary); font-weight: 600; background: none; border: none; cursor: pointer;">Cek Sekarang</button>
         </div>
 
         <!-- Tracking Direct Button -->
-        <button
-          @click="router.push(`/order/${order.order_number}`)"
-          class="w-full py-3 rounded-xl border border-neutral-800 hover:border-neutral-700 text-neutral-300 font-medium text-xs transition-colors"
-        >
-          Lihat Halaman Tracking Pesanan
-        </button>
+        <NuxtLink :to="`/order/${order.order_number}`" class="ph-btn ph-btn--secondary ph-btn--full">
+          Lihat Status Pesanan
+        </NuxtLink>
       </div>
 
       <!-- Error State -->
-      <div v-else class="py-12 space-y-4">
-        <p class="text-sm text-rose-400">Pesanan tidak ditemukan atau gagal dimuat.</p>
-        <button @click="router.push('/menu')" class="px-6 py-2 bg-amber-500 text-neutral-950 font-bold text-xs rounded-full">
-          Kembali ke Menu
-        </button>
+      <div v-else style="padding: 32px 0; display: flex; flex-direction: column; gap: 12px;">
+        <p style="font-size: 0.875rem; color: var(--ph-error);">Pesanan tidak ditemukan atau gagal dimuat.</p>
+        <NuxtLink to="/menu" class="ph-btn ph-btn--secondary">Kembali ke Menu</NuxtLink>
       </div>
     </div>
   </div>
