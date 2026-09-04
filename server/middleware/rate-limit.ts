@@ -31,7 +31,8 @@ export default defineEventHandler((event) => {
   if (!matchedRuleKey) return
 
   const rule = LIMITS[matchedRuleKey]
-  
+  if (!rule) return
+
   // Extract client IP address
   const clientIp = 
     getRequestHeader(event, 'x-forwarded-for')?.split(',')[0]?.trim() ||

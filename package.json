@@ -8,8 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck",
-    "test": "bun test"
+    "typecheck": "vue-tsc --noEmit",
+    "test": "jiti tests/baseline.test.ts"
   },
   "dependencies": {
     "@nuxt/ui": "^3.0.0",

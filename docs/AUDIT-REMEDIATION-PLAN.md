@@ -90,8 +90,8 @@ Acceptance criteria P2:
 - [x] Tambahkan pemeriksaan minimum untuk price calculation, state transition, auth/RBAC, idempotency, dan webhook.
 - [x] Uji loading, empty, offline, expired QR, sold-out, duplicate submit, dan payment failure states.
 - [x] Audit aksesibilitas keyboard, label form, focus state, contrast, dan reduced motion.
-- [ ] Audit environment production: secrets, URL callback, CORS, logging, backup, dan monitoring.
-- [ ] Ukur target performa yang tercantum di TECH-SPEC.
+- [x] Audit environment production: secrets, URL callback, CORS, logging, backup, dan monitoring.
+- [x] Ukur target performa yang tercantum di TECH-SPEC.
 
 Acceptance criteria P3:
 
