@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Product Detail Page — Taste Skill Anti-Slop Specification
- * Dual Viewport Architecture: Desktop 2-Column Layout & Mobile Device Frame Simulator.
+ * Clean Modern Layout (No heavy outer background wrappers / pelapis)
  */
 
 import type { Product, ProductVariant, Modifier } from '~/types/product'
@@ -124,17 +124,29 @@ function handleAdd() {
 <template>
   <div class="product-page ph-page">
     
-    <!-- Top System Switcher Bar -->
-    <div class="top-mode-bar">
-      <div class="ph-container top-mode-bar__container">
-        <div class="top-mode-bar__brand">
-          <span class="brand-badge">☕ PHILANTHROFFEE</span>
-          <span class="mode-indicator">{{ viewMode === 'desktop' ? 'Mode Desktop (Full Width)' : 'Mode Mobile (Simulasi HP)' }}</span>
+    <!-- Responsive Viewport Shell -->
+    <div :class="['product-viewport-wrapper', { 'product-viewport-wrapper--mobile-frame': viewMode === 'mobile' }]">
+      
+      <!-- Mobile Phone Notch / Speaker Mockup (Mobile Mode Only) -->
+      <div v-if="viewMode === 'mobile'" class="mobile-frame-speaker">
+        <div class="speaker-bar"></div>
+        <div class="camera-dot"></div>
+      </div>
+
+      <!-- Clean Header Control Row -->
+      <header class="clean-product-header">
+        <div class="header-brand-group">
+          <button class="back-link-btn" @click="router.back()" aria-label="Kembali">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+          <span class="product-header-label">Detail Produk</span>
         </div>
 
-        <div class="view-switcher-group">
+        <div class="view-mode-pills">
           <button
-            :class="['view-switch-btn', { 'view-switch-btn--active': viewMode === 'desktop' }]"
+            :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'desktop' }]"
             @click="viewMode = 'desktop'"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -146,7 +158,7 @@ function handleAdd() {
           </button>
 
           <button
-            :class="['view-switch-btn', { 'view-switch-btn--active': viewMode === 'mobile' }]"
+            :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'mobile' }]"
             @click="viewMode = 'mobile'"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -156,17 +168,7 @@ function handleAdd() {
             <span>Mobile</span>
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- Responsive Viewport Shell -->
-    <div :class="['product-viewport-wrapper', { 'product-viewport-wrapper--mobile-frame': viewMode === 'mobile' }]">
-      
-      <!-- Mobile Phone Notch (Visible only in Mobile Frame Mode) -->
-      <div v-if="viewMode === 'mobile'" class="mobile-frame-speaker">
-        <div class="speaker-bar"></div>
-        <div class="camera-dot"></div>
-      </div>
+      </header>
 
       <!-- Loading State -->
       <div v-if="pending" class="product-content product-content--skeleton">
@@ -195,15 +197,9 @@ function handleAdd() {
       <!-- Main Product Detail Content -->
       <div v-else :class="['product-main-layout', { 'product-main-layout--desktop': viewMode === 'desktop' }]">
         
-        <!-- Left Column: Product Visual & Media Card -->
+        <!-- Left Column: Product Visual Card -->
         <div class="product-visual-col">
-          <div class="product-hero-card ph-card">
-            <button class="back-circle-btn" @click="router.back()" aria-label="Kembali ke Menu">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <polyline points="15 18 9 12 15 6" />
-              </svg>
-            </button>
-
+          <div class="product-hero-card">
             <div class="hero-image-wrapper">
               <img
                 v-if="product.image_url"
@@ -212,7 +208,7 @@ function handleAdd() {
                 class="hero-img"
               />
               <div v-else class="hero-placeholder">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color: var(--ph-primary);">
+                <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="color: var(--ph-primary);">
                   <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
                   <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
                   <line x1="6" y1="2" x2="6" y2="4" />
@@ -224,7 +220,7 @@ function handleAdd() {
               <span v-if="product.is_featured" class="hero-signature-badge">SIGNATURE ROAST</span>
             </div>
 
-            <!-- Quality Badges (Desktop Only) -->
+            <!-- Quality Badges -->
             <div v-if="viewMode === 'desktop'" class="quality-badges-row">
               <div class="quality-item">
                 <span class="q-icon">🌱</span>
@@ -238,10 +234,9 @@ function handleAdd() {
           </div>
         </div>
 
-        <!-- Right Column: Details, Customizations, & Order Controls -->
+        <!-- Right Column: Details & Customizations -->
         <div class="product-details-col ph-card">
           
-          <!-- Title & Header Info -->
           <div class="details-header">
             <span class="ph-badge ph-badge--accent">{{ product.category?.name || 'SPECIALTY' }}</span>
             <h1 class="product-title">{{ product.name }}</h1>
@@ -258,7 +253,7 @@ function handleAdd() {
           <!-- Customization Groups -->
           <div v-else class="customizations-stack">
             
-            <!-- Variants Selection (Size/Volume) -->
+            <!-- Variants Selection -->
             <div v-if="product.variants.length > 0" class="custom-group">
               <h3 class="group-title">Pilih Ukuran</h3>
               <div class="option-chips-grid">
@@ -274,7 +269,7 @@ function handleAdd() {
               </div>
             </div>
 
-            <!-- Modifier Groups (Temperature, Sugar, Ice, Extras) -->
+            <!-- Modifier Groups -->
             <div v-for="group in product.modifier_groups" :key="group.id" class="custom-group">
               <div class="group-title-row">
                 <h3 class="group-title">{{ group.name }}</h3>
@@ -308,7 +303,7 @@ function handleAdd() {
 
           </div>
 
-          <!-- Floating Action Control (Quantity & Add to Cart CTA) -->
+          <!-- Floating Action Control -->
           <div v-if="product.availability !== ProductAvailability.SOLD_OUT" class="product-action-bar">
             <div class="qty-stepper">
               <button class="qty-btn" :disabled="quantity <= 1" @click="decQty" aria-label="Kurangi">
@@ -344,81 +339,22 @@ function handleAdd() {
 </template>
 
 <style scoped>
-/* Top System Mode Bar */
-.top-mode-bar {
-  background: var(--ph-bg-card);
-  border-bottom: 1px solid var(--ph-border);
-  padding: 8px 0;
+.product-page {
+  min-height: 100dvh;
+  background: var(--ph-bg);
 }
 
-.top-mode-bar__container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.top-mode-bar__brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-badge {
-  font-family: var(--ph-font-display);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--ph-primary);
-  letter-spacing: 0.05em;
-}
-
-.mode-indicator {
-  font-size: 0.75rem;
-  color: var(--ph-text-muted);
-}
-
-.view-switcher-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--ph-bg-elevated);
-  padding: 3px;
-  border-radius: var(--ph-radius-full);
-  border: 1px solid var(--ph-border);
-}
-
-.view-switch-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border: none;
-  border-radius: var(--ph-radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--ph-text-secondary);
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--ph-transition-fast);
-}
-
-.view-switch-btn--active {
-  background: var(--ph-primary);
-  color: #fff;
-}
-
-/* Viewport Shell */
 .product-viewport-wrapper {
   width: 100%;
   max-width: 1120px;
   margin: 0 auto;
-  padding: var(--ph-space-md);
+  padding: 0 var(--ph-space-md) var(--ph-space-xl);
   transition: all 0.3s ease;
 }
 
-/* Mobile Frame Simulator Specs */
 .product-viewport-wrapper--mobile-frame {
   max-width: 414px;
-  margin: 1.5rem auto;
+  margin: 1rem auto;
   padding: 0;
   border: 3px solid var(--ph-border);
   border-radius: 36px;
@@ -453,16 +389,75 @@ function handleAdd() {
   border-radius: 50%;
 }
 
-/* Layout Grid */
-.product-main-layout--desktop {
-  display: grid;
-  grid-template-columns: 440px 1fr;
-  gap: var(--ph-space-lg);
-  align-items: start;
+.clean-product-header {
+  padding: var(--ph-space-md) 0 var(--ph-space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.product-visual-col {
-  width: 100%;
+.header-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ph-radius-sm);
+  background: var(--ph-bg-elevated);
+  border: 1px solid var(--ph-border);
+  color: var(--ph-text);
+  cursor: pointer;
+}
+
+.product-header-label {
+  font-family: var(--ph-font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--ph-text);
+}
+
+.view-mode-pills {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ph-bg-elevated);
+  padding: 3px;
+  border-radius: var(--ph-radius-full);
+  border: 1px solid var(--ph-border);
+}
+
+.mode-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ph-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--ph-transition-fast);
+}
+
+.mode-pill-btn--active {
+  background: var(--ph-primary);
+  color: #fff;
+}
+
+.product-main-layout--desktop {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: var(--ph-space-lg);
+  align-items: start;
+  margin-top: var(--ph-space-xs);
 }
 
 .product-hero-card {
@@ -472,30 +467,6 @@ function handleAdd() {
   border: 1px solid var(--ph-border);
   border-radius: var(--ph-radius-xl);
   overflow: hidden;
-}
-
-.back-circle-btn {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 10;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid var(--ph-border);
-  color: var(--ph-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: var(--ph-shadow-sm);
-  transition: all var(--ph-transition-fast);
-}
-
-.back-circle-btn:hover {
-  background: #fff;
-  transform: scale(1.05);
 }
 
 .hero-image-wrapper {
@@ -555,7 +526,6 @@ function handleAdd() {
   gap: 6px;
 }
 
-/* Details Column */
 .product-details-col {
   padding: var(--ph-space-lg);
   background: var(--ph-bg-card);
@@ -574,7 +544,7 @@ function handleAdd() {
 
 .product-title {
   font-family: var(--ph-font-display);
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--ph-text);
   letter-spacing: -0.02em;
@@ -587,10 +557,10 @@ function handleAdd() {
 }
 
 .product-base-price {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--ph-accent);
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .sold-out-banner {
@@ -652,7 +622,7 @@ function handleAdd() {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 7px 14px;
   border-radius: var(--ph-radius-full);
   border: 1px solid var(--ph-border);
   background: var(--ph-bg);
@@ -691,14 +661,12 @@ function handleAdd() {
   resize: vertical;
 }
 
-/* Action Control Bar */
 .product-action-bar {
   display: flex;
   align-items: center;
   gap: var(--ph-space-md);
   padding-top: var(--ph-space-md);
   border-top: 1px dashed var(--ph-border);
-  margin-top: 4px;
 }
 
 .qty-stepper {
@@ -743,7 +711,6 @@ function handleAdd() {
   justify-content: space-between;
 }
 
-/* Skeleton & Empty */
 .product-content--skeleton {
   padding: var(--ph-space-xl);
   display: flex;

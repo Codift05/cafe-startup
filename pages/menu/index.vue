@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * Menu Page — Taste Skill Anti-Slop Specification
- * Complete Dual Viewport Architecture: Desktop & Mobile Simulator.
+ * Clean Modern Layout (No heavy outer background wrappers / pelapis)
  */
 
 import type { CategoryWithProducts, ProductSummary } from '~/types/product'
@@ -110,141 +110,145 @@ const recommendedItems = computed(() => {
 <template>
   <div class="menu-page ph-page">
     
-    <!-- Top System Switcher Bar (Always Fixed at Top) -->
-    <div class="top-mode-bar">
-      <div class="ph-container top-mode-bar__container">
-        <div class="top-mode-bar__brand">
-          <span class="brand-badge">☕ PHILANTHROFFEE</span>
-          <span class="mode-indicator">{{ viewMode === 'desktop' ? 'Mode Desktop (Full Width)' : 'Mode Mobile (Simulasi HP)' }}</span>
-        </div>
-
-        <div class="view-switcher-group">
-          <button
-            :class="['view-switch-btn', { 'view-switch-btn--active': viewMode === 'desktop' }]"
-            @click="viewMode = 'desktop'"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="3" width="20" height="14" rx="2" />
-              <line x1="8" y1="21" x2="16" y2="21" />
-              <line x1="12" y1="17" x2="12" y2="21" />
-            </svg>
-            <span>Desktop</span>
-          </button>
-
-          <button
-            :class="['view-switch-btn', { 'view-switch-btn--active': viewMode === 'mobile' }]"
-            @click="viewMode = 'mobile'"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="5" y="2" width="14" height="20" rx="3" />
-              <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3" />
-            </svg>
-            <span>Mobile</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Responsive Viewport Shell (Contains Header, Main Content, & Cart) -->
+    <!-- Viewport Shell -->
     <div :class="['menu-viewport-wrapper', { 'menu-viewport-wrapper--mobile-frame': viewMode === 'mobile' }]">
       
-      <!-- Mobile Phone Notch / Speaker Mockup (Visible only in Mobile Frame Mode) -->
+      <!-- Mobile Phone Notch / Speaker Mockup (Mobile Mode Only) -->
       <div v-if="viewMode === 'mobile'" class="mobile-frame-speaker">
         <div class="speaker-bar"></div>
         <div class="camera-dot"></div>
       </div>
 
-      <!-- Header (Now inside the Viewport Wrapper so it scales with Desktop/Mobile view) -->
-      <header :class="['menu-header', { 'menu-header--mobile': viewMode === 'mobile' }]">
-        <div class="menu-header__inner">
-          <div class="menu-header__top">
-            <NuxtLink to="/" class="menu-header__back" aria-label="Kembali">
+      <!-- Clean Header without Heavy Outer Panel / Background Pelapis -->
+      <header class="clean-menu-header">
+        <div class="header-main-row">
+          
+          <!-- Brand & Context -->
+          <div class="header-brand-group">
+            <NuxtLink to="/" class="back-link-btn" aria-label="Beranda">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </NuxtLink>
-
-            <div class="menu-header__title-group">
-              <h1 class="menu-header__title">Catalog Menu</h1>
-              <span class="ph-badge ph-badge--accent">{{ orderLabel }}</span>
-            </div>
+            <h1 class="catalog-title">Catalog Menu</h1>
+            <span class="ph-badge ph-badge--accent">{{ orderLabel }}</span>
           </div>
 
-          <!-- Controls: Search Input & Category Chips -->
-          <div class="menu-controls-stack">
-            <!-- Search Box -->
-            <div class="menu-search-box">
-              <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <!-- View Mode Switcher (Inline Pills) -->
+          <div class="view-mode-pills">
+            <button
+              :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'desktop' }]"
+              @click="viewMode = 'desktop'"
+              title="Tampilan Desktop"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2" />
+                <line x1="8" y1="21" x2="16" y2="21" />
+                <line x1="12" y1="17" x2="12" y2="21" />
               </svg>
-              <input
-                v-model="searchQuery"
-                type="text"
-                placeholder="Cari kopi, pastry, atau minuman..."
-                class="menu-search-input"
-              />
-              <button v-if="searchQuery" class="clear-search-btn" @click="searchQuery = ''">✕</button>
-            </div>
+              <span>Desktop</span>
+            </button>
 
-            <!-- Category Filter Chips -->
-            <nav v-if="categories.length > 0" class="menu-tabs" aria-label="Kategori menu">
-              <button
-                v-for="cat in categories"
-                :key="cat.slug"
-                :class="['menu-tabs__item', { 'menu-tabs__item--active': activeCategory === cat.slug && !searchQuery }]"
-                @click="selectCategory(cat.slug)"
-              >
-                {{ cat.name }}
-              </button>
-            </nav>
+            <button
+              :class="['mode-pill-btn', { 'mode-pill-btn--active': viewMode === 'mobile' }]"
+              @click="viewMode = 'mobile'"
+              title="Tampilan Mobile"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="3" />
+                <line x1="12" y1="18" x2="12.01" y2="18" stroke-width="3" />
+              </svg>
+              <span>Mobile</span>
+            </button>
           </div>
+
+        </div>
+
+        <!-- Controls: Compact Search & Category Chips -->
+        <div class="clean-controls-row">
+          
+          <!-- Search Bar -->
+          <div class="clean-search-box">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Cari kopi, pastry, atau minuman..."
+              class="clean-search-input"
+            />
+            <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''">✕</button>
+          </div>
+
+          <!-- Category Filter Chips -->
+          <nav v-if="categories.length > 0" class="clean-category-tabs" aria-label="Kategori menu">
+            <button
+              v-for="cat in categories"
+              :key="cat.slug"
+              :class="['clean-tab-chip', { 'clean-tab-chip--active': activeCategory === cat.slug && !searchQuery }]"
+              @click="selectCategory(cat.slug)"
+            >
+              {{ cat.name }}
+            </button>
+          </nav>
+
         </div>
       </header>
 
       <!-- Main Content Area -->
       <main class="menu-content">
         
-        <!-- Banner Hero Card (Desktop Mode Only) -->
-        <div v-if="viewMode === 'desktop'" class="menu-hero-banner ph-card">
-          <div class="hero-banner__text">
-            <span class="ph-badge ph-badge--accent">SPECIALTY ROASTS & PASTRIES</span>
-            <h2 class="hero-banner__title">Cita Rasa Kopi & Pastry Autentik</h2>
-            <p class="hero-banner__desc">Biji kopi 100% Arabika diseduh segar dengan susu pilihan dan gula aren murni.</p>
-          </div>
-          <div class="hero-banner__art">☕</div>
-        </div>
-
         <div :class="['menu-layout-grid', { 'menu-layout-grid--desktop': viewMode === 'desktop' }]">
 
           <!-- Product Catalog Grid -->
-          <section class="menu-catalog-section">
+          <div class="catalog-primary-col">
+            
+            <!-- Category Title & Counter -->
             <div class="section-title-row">
-              <h3 class="section-heading">
-                {{ searchQuery ? `Pencarian ("${searchQuery}")` : (categories.find(c => c.slug === activeCategory)?.name || 'Katalog') }}
-              </h3>
-              <span class="section-count-badge">{{ filteredProducts.length }} menu</span>
+              <h2 class="section-heading">
+                {{ searchQuery ? `Hasil Pencarian ("${searchQuery}")` : (categories.find(c => c.slug === activeCategory)?.name || 'Semua Menu') }}
+              </h2>
+              <span class="section-count-badge">{{ filteredProducts.length }} Produk</span>
             </div>
 
             <!-- Loading Skeleton -->
-            <div v-if="pending" class="menu-grid ph-stagger">
-              <div v-for="i in 6" :key="i" class="product-card-skeleton ph-skeleton" />
+            <div v-if="pending" class="menu-grid" :class="{ 'menu-grid--mobile': viewMode === 'mobile' }">
+              <div v-for="i in 6" :key="i" class="product-card product-card--skeleton">
+                <div class="ph-skeleton skeleton-img"></div>
+                <div class="skeleton-body">
+                  <div class="ph-skeleton skeleton-title"></div>
+                  <div class="ph-skeleton skeleton-price"></div>
+                </div>
+              </div>
             </div>
 
             <!-- Error State -->
-            <div v-else-if="error" class="menu-empty ph-card">
-              <p>Gagal memuat data menu.</p>
-              <button class="ph-btn ph-btn--secondary ph-btn--sm" @click="$router.go(0)">Coba Lagi</button>
+            <div v-else-if="error" class="ph-card menu-error">
+              <p>Gagal memuat catalog menu. Silakan refresh halaman.</p>
             </div>
 
-            <!-- Products Grid -->
-            <div v-else-if="filteredProducts.length > 0" :class="['menu-grid', { 'menu-grid--mobile': viewMode === 'mobile' }]">
-              <article
+            <!-- Empty Search State -->
+            <div v-else-if="filteredProducts.length === 0" class="ph-card menu-empty">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--ph-accent);">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <h3 class="ph-heading-md">Menu tidak ditemukan</h3>
+              <p class="ph-caption">Coba gunakan kata kunci pencarian yang lain.</p>
+              <button class="ph-btn ph-btn--secondary" @click="searchQuery = ''">Lihat Semua Menu</button>
+            </div>
+
+            <!-- Product Items Grid -->
+            <div v-else :class="['menu-grid', { 'menu-grid--mobile': viewMode === 'mobile' }]">
+              <div
                 v-for="product in filteredProducts"
                 :key="product.id"
-                :class="['product-card ph-card ph-card--interactive', { 'ph-sold-out': product.availability === ProductAvailability.SOLD_OUT }]"
+                :class="['product-card', { 'product-card--disabled': product.availability === ProductAvailability.SOLD_OUT }]"
                 @click="openProduct(product)"
               >
+                <!-- Image Container -->
                 <div class="product-card__image-container">
                   <img
                     v-if="product.image_url"
@@ -253,7 +257,7 @@ const recommendedItems = computed(() => {
                     loading="lazy"
                   />
                   <div v-else class="product-card__placeholder">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--ph-primary);">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--ph-primary);">
                       <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
                       <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
                       <line x1="6" y1="2" x2="6" y2="4" />
@@ -261,106 +265,86 @@ const recommendedItems = computed(() => {
                       <line x1="14" y1="2" x2="14" y2="4" />
                     </svg>
                   </div>
+
                   <span v-if="product.is_featured" class="product-badge">SIGNATURE</span>
+                  <span v-if="product.availability === ProductAvailability.SOLD_OUT" class="product-badge product-badge--soldout">HABIS</span>
                 </div>
 
+                <!-- Product Body -->
                 <div class="product-card__body">
-                  <h4 class="product-card__name">{{ product.name }}</h4>
+                  <h3 class="product-card__name">{{ product.name }}</h3>
                   <p v-if="product.description" class="product-card__desc">{{ product.description }}</p>
                   
                   <div class="product-card__footer">
                     <span class="product-card__price ph-price">{{ formatRupiah(product.base_price) }}</span>
                     <button
+                      v-if="product.availability !== ProductAvailability.SOLD_OUT"
                       class="quick-add-btn"
-                      :disabled="product.availability === ProductAvailability.SOLD_OUT"
                       @click="(e) => quickAddToCart(e, product)"
+                      aria-label="Tambah ke keranjang"
                     >
-                      + Tambah
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="12" y1="5" x2="12" y2="19" />
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                      </svg>
+                      <span>Tambah</span>
                     </button>
                   </div>
                 </div>
-              </article>
+              </div>
             </div>
 
-            <!-- Empty Search Results -->
-            <div v-else class="menu-empty ph-card">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--ph-text-muted);">
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-              <p>Menu tidak ditemukan</p>
-              <button class="ph-btn ph-btn--secondary ph-btn--sm" @click="searchQuery = ''">Reset Filter</button>
-            </div>
-          </section>
+          </div>
 
-          <!-- Desktop Sidebar Cart (Visible on Desktop Mode) -->
-          <aside v-if="viewMode === 'desktop'" class="menu-desktop-sidebar">
-            <div class="desktop-cart-card ph-card">
-              <div class="desktop-cart-card__header">
-                <div>
-                  <h3 class="desktop-cart-card__title">Pesanan Saya</h3>
-                  <span class="desktop-cart-card__sub">{{ orderLabel }}</span>
-                </div>
-                <span class="ph-badge ph-badge--accent">{{ itemCount }} Item</span>
+          <!-- Desktop Sidebar Cart -->
+          <div v-if="viewMode === 'desktop'" class="catalog-sidebar-col">
+            <div class="ph-card sidebar-cart-card">
+              <div class="sidebar-cart__header">
+                <h3 class="sidebar-cart__title">Pesanan Anda</h3>
+                <span class="ph-badge ph-badge--accent">{{ itemCount }} item</span>
               </div>
 
-              <!-- Empty State & Recommendations -->
-              <div v-if="cart.items.length === 0" class="desktop-cart-empty">
-                <div class="empty-icon-circle">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color: var(--ph-text-muted);">
+              <!-- Empty Cart State -->
+              <div v-if="cart.items.length === 0" class="sidebar-cart__empty">
+                <div class="empty-icon-box">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="color: var(--ph-primary);">
                     <circle cx="9" cy="21" r="1" />
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
                 </div>
-                <h4 class="empty-title">Keranjang Masih Kosong</h4>
-                <p class="empty-desc">Pilih menu favorit Anda di katalog sebelah kiri untuk langsung menambahkan.</p>
-
-                <div v-if="recommendedItems.length > 0" class="recommendation-box">
-                  <span class="recommendation-label">Rekomendasi Barista:</span>
-                  <div
-                    v-for="rec in recommendedItems"
-                    :key="rec.id"
-                    class="recommendation-item"
-                    @click="quickAddToCart($event, rec)"
-                  >
-                    <span>{{ rec.name }}</span>
-                    <span class="rec-add-btn">+ {{ formatRupiah(rec.base_price) }}</span>
-                  </div>
-                </div>
+                <h4 class="empty-title">Keranjang Kosong</h4>
+                <p class="empty-desc">Pilih menu favorit Anda dari katalog untuk mulai memesan.</p>
               </div>
 
-              <!-- Filled Cart Items -->
-              <div v-else class="desktop-cart-content">
-                <div class="desktop-cart-items-list">
-                  <div v-for="item in cart.items" :key="item.cartItemId" class="desktop-cart-item">
-                    <div class="desktop-cart-item__info">
-                      <h5 class="desktop-cart-item__name">{{ item.productName }}</h5>
-                      <span v-if="item.variantName" class="desktop-cart-item__variant">{{ item.variantName }}</span>
-                      <span class="desktop-cart-item__price ph-price">{{ formatRupiah(item.unitPrice * item.quantity) }}</span>
+              <!-- Cart Items List -->
+              <div v-else class="sidebar-cart__list">
+                <div v-for="item in cart.items" :key="item.cartItemId" class="sidebar-cart-item">
+                  <div class="cart-item__info">
+                    <h4 class="cart-item__name">{{ item.productName }}</h4>
+                    <span v-if="item.variantName" class="cart-item__sub">{{ item.variantName }}</span>
+                    <div v-if="item.modifiers.length > 0" class="cart-item__mods">
+                      <span v-for="m in item.modifiers" :key="m.modifierId" class="mod-tag">{{ m.modifierName }}</span>
                     </div>
+                    <span class="cart-item__price ph-price">{{ formatRupiah(item.unitPrice * item.quantity) }}</span>
+                  </div>
 
-                    <div class="desktop-cart-item__controls">
-                      <button class="qty-btn" @click="updateQuantity(item.cartItemId, item.quantity - 1)">-</button>
-                      <span class="qty-val">{{ item.quantity }}</span>
-                      <button class="qty-btn" @click="updateQuantity(item.cartItemId, item.quantity + 1)">+</button>
-                    </div>
+                  <div class="cart-item__controls">
+                    <button class="cart-qty-btn" @click="updateQuantity(item.cartItemId, item.quantity - 1)">-</button>
+                    <span class="cart-qty-num">{{ item.quantity }}</span>
+                    <button class="cart-qty-btn" @click="updateQuantity(item.cartItemId, item.quantity + 1)">+</button>
                   </div>
                 </div>
 
-                <div class="desktop-cart-breakdown">
-                  <div class="breakdown-row">
-                    <span>Subtotal Menu</span>
-                    <span>{{ formatRupiah(total) }}</span>
-                  </div>
-                  <div class="breakdown-row breakdown-row--total">
-                    <span>Total Pembayaran</span>
+                <!-- Subtotal & Checkout -->
+                <div class="sidebar-cart__footer">
+                  <div class="subtotal-row">
+                    <span>Subtotal</span>
                     <span class="ph-price">{{ formatRupiah(total) }}</span>
                   </div>
-
-                  <button class="ph-btn ph-btn--primary ph-btn--full ph-btn--lg checkout-cta-btn" @click="goToCart">
-                    <span>Lanjut ke Pembayaran</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <button class="ph-btn ph-btn--primary ph-btn--lg checkout-btn" @click="goToCart">
+                    <span>Lanjut ke Checkout</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                       <polyline points="9 18 15 12 9 6" />
                     </svg>
                   </button>
@@ -368,99 +352,56 @@ const recommendedItems = computed(() => {
               </div>
 
             </div>
-          </aside>
+          </div>
 
         </div>
+
       </main>
 
-      <!-- Floating Cart Bar for Mobile View (Anchored inside the Mobile Frame) -->
-      <div v-if="itemCount > 0 && viewMode === 'mobile'" class="mobile-frame-cart-bar">
-        <button class="cart-bar ph-btn ph-btn--primary ph-btn--full ph-btn--lg" @click="goToCart">
-          <span class="cart-bar__count">{{ itemCount }}</span>
-          <span class="cart-bar__label">Lihat Keranjang</span>
-          <span class="cart-bar__price ph-price">{{ formatRupiah(total) }}</span>
-        </button>
+      <!-- Floating Cart Bar (Mobile Frame Mode Only) -->
+      <div v-if="viewMode === 'mobile' && itemCount > 0" class="mobile-floating-cart">
+        <div class="floating-cart-content" @click="goToCart">
+          <div class="cart-badge-group">
+            <span class="cart-count-pill">{{ itemCount }}</span>
+            <div class="cart-text-group">
+              <span class="cart-label">Pesanan Anda</span>
+              <span class="cart-total ph-price">{{ formatRupiah(total) }}</span>
+            </div>
+          </div>
+
+          <button class="floating-checkout-btn">
+            <span>Lihat Keranjang</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
       </div>
 
     </div>
+
   </div>
 </template>
 
 <style scoped>
-/* Top System Mode Bar */
-.top-mode-bar {
-  background: var(--ph-bg-card);
-  border-bottom: 1px solid var(--ph-border);
-  padding: 8px 0;
+/* Base Layout */
+.menu-page {
+  min-height: 100dvh;
+  background: var(--ph-bg);
 }
 
-.top-mode-bar__container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.top-mode-bar__brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-badge {
-  font-family: var(--ph-font-display);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--ph-primary);
-  letter-spacing: 0.05em;
-}
-
-.mode-indicator {
-  font-size: 0.75rem;
-  color: var(--ph-text-muted);
-}
-
-.view-switcher-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--ph-bg-elevated);
-  padding: 3px;
-  border-radius: var(--ph-radius-full);
-  border: 1px solid var(--ph-border);
-}
-
-.view-switch-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 12px;
-  border: none;
-  border-radius: var(--ph-radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--ph-text-secondary);
-  background: transparent;
-  cursor: pointer;
-  transition: all var(--ph-transition-fast);
-}
-
-.view-switch-btn--active {
-  background: var(--ph-primary);
-  color: #fff;
-}
-
-/* Viewport Shell */
 .menu-viewport-wrapper {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1180px;
   margin: 0 auto;
+  padding: 0 var(--ph-space-md);
   transition: all 0.3s ease;
 }
 
-/* Mobile Frame Simulator Specs */
 .menu-viewport-wrapper--mobile-frame {
   max-width: 414px;
-  margin: 1.5rem auto;
+  margin: 1rem auto;
+  padding: 0;
   border: 3px solid var(--ph-border);
   border-radius: 36px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
@@ -494,118 +435,151 @@ const recommendedItems = computed(() => {
   border-radius: 50%;
 }
 
-/* Header Inside Viewport Wrapper */
-.menu-header {
-  background: var(--ph-bg-card);
-  border-bottom: 1px solid var(--ph-border);
-  padding: var(--ph-space-md);
-}
-
-.menu-header__inner {
+/* Streamlined Clean Header (Zero Outer Container Wrapper / Pelapis) */
+.clean-menu-header {
+  padding: var(--ph-space-md) 0 var(--ph-space-xs);
   display: flex;
   flex-direction: column;
-  gap: var(--ph-space-sm);
+  gap: 12px;
 }
 
-.menu-header__top {
+.header-main-row {
   display: flex;
   align-items: center;
-  gap: var(--ph-space-sm);
+  justify-content: space-between;
 }
 
-.menu-header__back {
+.header-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-link-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  border-radius: var(--ph-radius-md);
-  color: var(--ph-text);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ph-radius-sm);
   background: var(--ph-bg-elevated);
   border: 1px solid var(--ph-border);
+  color: var(--ph-text);
 }
 
-.menu-header__title-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.menu-header__title {
+.catalog-title {
   font-family: var(--ph-font-display);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--ph-text);
 }
 
-.menu-controls-stack {
+.view-mode-pills {
   display: flex;
-  flex-direction: column;
-  gap: var(--ph-space-sm);
+  align-items: center;
+  gap: 4px;
+  background: var(--ph-bg-elevated);
+  padding: 3px;
+  border-radius: var(--ph-radius-full);
+  border: 1px solid var(--ph-border);
 }
 
-.menu-search-box {
+.mode-pill-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: var(--ph-radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ph-text-secondary);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--ph-transition-fast);
+}
+
+.mode-pill-btn--active {
+  background: var(--ph-primary);
+  color: #fff;
+}
+
+/* Controls: Search & Category Filter */
+.clean-controls-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clean-search-box {
   position: relative;
-  width: 100%;
+  display: flex;
+  align-items: center;
 }
 
 .search-icon {
   position: absolute;
   left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
   color: var(--ph-text-muted);
 }
 
-.menu-search-input {
+.clean-search-input {
   width: 100%;
-  padding: 8px 32px 8px 36px;
-  border: 1px solid var(--ph-border);
+  padding: 9px 36px 9px 36px;
   border-radius: var(--ph-radius-full);
-  background: var(--ph-bg);
+  border: 1px solid var(--ph-border);
+  background: var(--ph-bg-card);
   color: var(--ph-text);
   font-family: var(--ph-font-body);
   font-size: 0.8125rem;
-  outline: none;
+  transition: border-color 0.15s ease;
 }
 
-.clear-search-btn {
+.clean-search-input:focus {
+  outline: none;
+  border-color: var(--ph-primary);
+}
+
+.clear-btn {
   position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
+  right: 12px;
+  background: none;
   border: none;
   color: var(--ph-text-muted);
   cursor: pointer;
 }
 
-/* Category Chips */
-.menu-tabs {
+.clean-category-tabs {
   display: flex;
+  align-items: center;
   gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
 }
 
-.menu-tabs::-webkit-scrollbar { display: none; }
+.clean-category-tabs::-webkit-scrollbar {
+  display: none;
+}
 
-.menu-tabs__item {
-  flex-shrink: 0;
+.clean-tab-chip {
   padding: 6px 14px;
-  font-family: var(--ph-font-body);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--ph-text-secondary);
-  background: var(--ph-bg);
-  border: 1px solid var(--ph-border);
   border-radius: var(--ph-radius-full);
-  cursor: pointer;
+  border: 1px solid var(--ph-border);
+  background: var(--ph-bg-card);
+  color: var(--ph-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--ph-transition-fast);
 }
 
-.menu-tabs__item--active {
+.clean-tab-chip:hover {
+  border-color: var(--ph-primary);
+}
+
+.clean-tab-chip--active {
   background: var(--ph-primary);
   color: #fff;
   border-color: var(--ph-primary);
@@ -613,48 +587,13 @@ const recommendedItems = computed(() => {
 
 /* Content Area */
 .menu-content {
-  padding: var(--ph-space-md);
+  padding-top: var(--ph-space-sm);
+  padding-bottom: var(--ph-space-xl);
 }
 
-.menu-hero-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--ph-space-lg);
-  margin-bottom: var(--ph-space-lg);
-  background: linear-gradient(135deg, var(--ph-bg-card) 0%, var(--ph-bg-elevated) 100%);
-  border: 1px solid var(--ph-border);
-  border-radius: var(--ph-radius-xl);
-}
-
-.hero-banner__title {
-  font-family: var(--ph-font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--ph-text);
-}
-
-.hero-banner__desc {
-  font-size: 0.8125rem;
-  color: var(--ph-text-secondary);
-}
-
-.hero-banner__art {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: var(--ph-primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-}
-
-/* Layout Grid */
 .menu-layout-grid--desktop {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 320px;
   gap: var(--ph-space-lg);
   align-items: start;
 }
@@ -668,7 +607,7 @@ const recommendedItems = computed(() => {
 
 .section-heading {
   font-family: var(--ph-font-display);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: var(--ph-text);
 }
@@ -681,7 +620,7 @@ const recommendedItems = computed(() => {
 /* Menu Grid */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
   gap: var(--ph-space-md);
 }
 
@@ -705,8 +644,13 @@ const recommendedItems = computed(() => {
   border-color: var(--ph-primary);
 }
 
+.product-card--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .product-card__image-container {
-  aspect-ratio: 1.3;
+  aspect-ratio: 1.35;
   position: relative;
   background: var(--ph-bg-elevated);
   overflow: hidden;
@@ -738,6 +682,10 @@ const recommendedItems = computed(() => {
   color: #fff;
 }
 
+.product-badge--soldout {
+  background: #dc2626;
+}
+
 .product-card__body {
   padding: var(--ph-space-sm) var(--ph-space-md) var(--ph-space-md);
   display: flex;
@@ -756,6 +704,7 @@ const recommendedItems = computed(() => {
 .product-card__desc {
   font-size: 0.75rem;
   color: var(--ph-text-muted);
+  line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -763,11 +712,11 @@ const recommendedItems = computed(() => {
 }
 
 .product-card__footer {
-  margin-top: auto;
-  padding-top: var(--ph-space-xs);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
 }
 
 .product-card__price {
@@ -777,14 +726,18 @@ const recommendedItems = computed(() => {
 }
 
 .quick-add-btn {
-  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
   border-radius: var(--ph-radius-full);
   border: 1px solid var(--ph-border);
   background: var(--ph-bg-elevated);
-  color: var(--ph-primary);
-  font-weight: 700;
+  color: var(--ph-text);
   font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all var(--ph-transition-fast);
 }
 
 .quick-add-btn:hover {
@@ -793,17 +746,17 @@ const recommendedItems = computed(() => {
   border-color: var(--ph-primary);
 }
 
-/* Desktop Cart Sidebar */
-.desktop-cart-card {
+/* Sidebar Cart */
+.sidebar-cart-card {
   padding: var(--ph-space-md);
-  position: sticky;
-  top: 80px;
-  border: 1px solid var(--ph-border);
-  border-radius: var(--ph-radius-lg);
   background: var(--ph-bg-card);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--ph-radius-xl);
+  position: sticky;
+  top: 16px;
 }
 
-.desktop-cart-card__header {
+.sidebar-cart__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -811,42 +764,34 @@ const recommendedItems = computed(() => {
   border-bottom: 1px solid var(--ph-border);
 }
 
-.desktop-cart-card__title {
+.sidebar-cart__title {
   font-family: var(--ph-font-display);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
-  color: var(--ph-text);
 }
 
-.desktop-cart-card__sub {
-  font-size: 0.75rem;
-  color: var(--ph-text-muted);
-}
-
-.desktop-cart-empty {
+.sidebar-cart__empty {
   text-align: center;
   padding: var(--ph-space-lg) 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.empty-icon-circle {
-  width: 48px;
-  height: 48px;
+.empty-icon-box {
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--ph-bg-elevated);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 4px;
 }
 
 .empty-title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: var(--ph-text);
 }
 
 .empty-desc {
@@ -854,181 +799,150 @@ const recommendedItems = computed(() => {
   color: var(--ph-text-muted);
 }
 
-.recommendation-box {
-  margin-top: var(--ph-space-sm);
-  width: 100%;
-  text-align: left;
+.sidebar-cart__list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   padding-top: var(--ph-space-sm);
-  border-top: 1px dashed var(--ph-border);
 }
 
-.recommendation-label {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  color: var(--ph-text-secondary);
-}
-
-.recommendation-item {
+.sidebar-cart-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 6px 10px;
-  border-radius: var(--ph-radius-md);
-  background: var(--ph-bg-elevated);
-  border: 1px solid var(--ph-border);
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--ph-border);
 }
 
-.rec-add-btn {
-  font-size: 0.6875rem;
-  color: var(--ph-accent);
-}
-
-.desktop-cart-content {
+.cart-item__info {
   display: flex;
   flex-direction: column;
-  gap: var(--ph-space-sm);
-  margin-top: var(--ph-space-sm);
+  gap: 2px;
 }
 
-.desktop-cart-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.desktop-cart-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px;
-  border-radius: var(--ph-radius-md);
-  background: var(--ph-bg-elevated);
-  border: 1px solid var(--ph-border);
-}
-
-.desktop-cart-item__info {
-  display: flex;
-  flex-direction: column;
-}
-
-.desktop-cart-item__name {
+.cart-item__name {
   font-size: 0.8125rem;
   font-weight: 700;
-  color: var(--ph-text);
 }
 
-.desktop-cart-item__price {
-  font-size: 0.75rem;
-  color: var(--ph-accent);
+.cart-item__sub, .mod-tag {
+  font-size: 0.6875rem;
+  color: var(--ph-text-muted);
+}
+
+.cart-item__price {
+  font-size: 0.8125rem;
   font-weight: 700;
+  color: var(--ph-accent);
 }
 
-.desktop-cart-item__controls {
+.cart-item__controls {
   display: flex;
   align-items: center;
-  gap: 4px;
-}
-
-.qty-btn {
-  width: 22px;
-  height: 22px;
+  gap: 6px;
+  background: var(--ph-bg-elevated);
+  padding: 2px 6px;
   border-radius: var(--ph-radius-sm);
   border: 1px solid var(--ph-border);
-  background: var(--ph-bg-card);
-  color: var(--ph-text);
+}
+
+.cart-qty-btn {
+  background: none;
+  border: none;
   font-weight: 700;
   cursor: pointer;
+  color: var(--ph-text);
+}
+
+.cart-qty-num {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.sidebar-cart__footer {
+  padding-top: var(--ph-space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.subtotal-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* Mobile Floating Cart */
+.mobile-floating-cart {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 50;
+}
+
+.floating-cart-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: var(--ph-radius-full);
+  background: var(--ph-primary);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.cart-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cart-count-pill {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ph-accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.qty-val {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  min-width: 16px;
-  text-align: center;
-}
-
-.desktop-cart-breakdown {
-  padding-top: var(--ph-space-sm);
-  border-top: 1px dashed var(--ph-border);
+.cart-text-group {
   display: flex;
   flex-direction: column;
+}
+
+.cart-label {
+  font-size: 0.6875rem;
+  opacity: 0.85;
+}
+
+.cart-total {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.floating-checkout-btn {
+  display: flex;
+  align-items: center;
   gap: 4px;
-}
-
-.breakdown-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8125rem;
-  color: var(--ph-text-secondary);
-}
-
-.breakdown-row--total {
-  font-size: 0.9375rem;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: var(--ph-text);
-}
-
-.checkout-cta-btn {
-  margin-top: var(--ph-space-sm);
-}
-
-/* Mobile Frame Floating Cart Bar */
-.mobile-frame-cart-bar {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px;
-  background: var(--ph-bg-card);
-  border-top: 1px solid var(--ph-border);
-}
-
-.cart-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--ph-space-sm);
-}
-
-.cart-bar__count {
-  background: rgba(255, 255, 255, 0.25);
-  padding: 2px 8px;
-  border-radius: var(--ph-radius-full);
-  font-size: 0.8125rem;
-  font-weight: 700;
-}
-
-.cart-bar__label {
-  flex: 1;
-  text-align: left;
-}
-
-.cart-bar__price {
-  font-size: 0.9375rem;
-}
-
-.product-card-skeleton {
-  aspect-ratio: 0.75;
-  border-radius: var(--ph-radius-lg);
-}
-
-.menu-empty {
-  text-align: center;
-  padding: var(--ph-space-xl) var(--ph-space-md);
-  color: var(--ph-text-secondary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ph-space-sm);
 }
 </style>
