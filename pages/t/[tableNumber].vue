@@ -1,16 +1,13 @@
 <script setup lang="ts">
-/**
- * QR Table Entry — /t/[tableNumber]?token=xxx
- * Verifies the QR token, sets cart context to DINE_IN, and redirects to menu.
- */
-
 import { OrderType } from '~/types/order'
+
+useHead({ title: 'Verifikasi Meja — Philanthroffee' })
 
 const route = useRoute()
 const router = useRouter()
 const { setOrderContext } = useCart()
 
-const tableNumber = route.params.tableNumber as string
+const tableNumber = (route.params.tableNumber as string) || ''
 const token = (route.query.token as string) || ''
 
 const loading = ref(true)
@@ -57,23 +54,33 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="qr-entry">
-    <div class="ph-container qr-entry__content">
-      <!-- Loading -->
-      <div v-if="loading" class="qr-entry__loading">
-        <div class="qr-entry__spinner" />
-        <p class="qr-entry__text">Memverifikasi meja...</p>
-        <p class="ph-caption">Meja {{ tableNumber }}</p>
-      </div>
+  <div class="qr-entry ph-page">
+    <div class="ph-container qr-entry__container">
+      <div class="qr-card ph-card">
+        
+        <!-- Loading State -->
+        <div v-if="loading" class="qr-state">
+          <div class="spinner-ring"></div>
+          <h2 class="state-title">Memverifikasi Meja {{ tableNumber }}</h2>
+          <p class="state-desc">Menghubungkan ke sistem Philanthroffee...</p>
+        </div>
 
-      <!-- Error -->
-      <div v-else class="qr-entry__error ph-animate-in">
-        <div class="qr-entry__error-icon">⚠️</div>
-        <h2 class="ph-heading-md">Oops!</h2>
-        <p class="qr-entry__error-msg">{{ errorMsg }}</p>
-        <NuxtLink to="/" class="ph-btn ph-btn--secondary" style="margin-top: 16px;">
-          Kembali ke Beranda
-        </NuxtLink>
+        <!-- Error State -->
+        <div v-else class="qr-state ph-animate-in">
+          <div class="error-icon-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #dc2626;">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+          <h2 class="state-title">Verifikasi QR Gagal</h2>
+          <p class="error-msg">{{ errorMsg }}</p>
+          <NuxtLink to="/" class="ph-btn ph-btn--primary">
+            Kembali ke Beranda
+          </NuxtLink>
+        </div>
+
       </div>
     </div>
   </div>
@@ -85,54 +92,72 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--ph-space-md);
+  background: var(--ph-bg);
 }
 
-.qr-entry__content {
+.qr-entry__container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.qr-card {
+  padding: var(--ph-space-xl) var(--ph-space-lg);
+  border: 1px solid var(--ph-border);
+  background: var(--ph-bg-card);
+  border-radius: var(--ph-radius-xl);
   text-align: center;
-  padding: var(--ph-space-2xl) var(--ph-space-md);
+  box-shadow: var(--ph-shadow-md);
 }
 
-.qr-entry__loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ph-space-md);
-}
-
-.qr-entry__spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid var(--ph-border);
-  border-top-color: var(--ph-accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.qr-entry__text {
-  color: var(--ph-text-secondary);
-  font-size: 0.9375rem;
-}
-
-.qr-entry__error {
+.qr-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--ph-space-sm);
 }
 
-.qr-entry__error-icon {
-  font-size: 3rem;
-  margin-bottom: var(--ph-space-sm);
+.spinner-ring {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--ph-border);
+  border-top-color: var(--ph-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: var(--ph-space-xs);
 }
 
-.qr-entry__error-msg {
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.state-title {
+  font-family: var(--ph-font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--ph-text);
+}
+
+.state-desc {
+  font-size: 0.8125rem;
+  color: var(--ph-text-muted);
+}
+
+.error-icon-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--ph-space-xs);
+}
+
+.error-msg {
+  font-size: 0.875rem;
   color: var(--ph-text-secondary);
-  font-size: 0.9375rem;
-  max-width: 280px;
-  line-height: 1.5;
+  max-width: 300px;
 }
 </style>
