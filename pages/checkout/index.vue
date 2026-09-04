@@ -205,7 +205,7 @@
   </div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCart } from '~/composables/useCart'

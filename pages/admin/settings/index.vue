@@ -102,7 +102,7 @@
   </div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const isPaused = ref(false)

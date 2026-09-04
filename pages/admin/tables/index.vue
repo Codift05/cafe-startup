@@ -106,7 +106,7 @@
   </div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref } from 'vue'
 
 const showAddModal = ref(false)

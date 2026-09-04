@@ -140,7 +140,7 @@
   </div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { formatRp } from '~/utils/currency'

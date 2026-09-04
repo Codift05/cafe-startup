@@ -28,3 +28,12 @@ export const MAX_CART_ITEMS = 20
 
 /** Maximum quantity per item */
 export const MAX_ITEM_QUANTITY = 10
+
+/** Allowed Order Status Transitions */
+export const ORDER_TRANSITIONS: Record<string, string[]> = {
+  WAITING_PAYMENT: ['PAID', 'CANCELLED'],
+  PAID: ['PREPARING', 'CANCELLED'],
+  PREPARING: ['READY'],
+  READY: ['COMPLETED'],
+}
+

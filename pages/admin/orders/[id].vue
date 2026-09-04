@@ -111,7 +111,7 @@
   </div>
 </template>
 
-<script setup ts>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { formatRp } from '~/utils/currency'
