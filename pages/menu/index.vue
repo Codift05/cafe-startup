@@ -100,7 +100,7 @@ const orderLabel = computed(() => {
 <template>
   <div class="menu-page ph-page">
     
-    <div class="menu-container">
+    <div class="ph-container">
       
       <!-- Clean Header without Fake Mode Switchers or Outer Pelapis -->
       <header class="clean-menu-header">
@@ -329,16 +329,9 @@ const orderLabel = computed(() => {
   background: var(--ph-bg);
 }
 
-.menu-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--ph-space-md);
-}
-
 /* Header */
 .clean-menu-header {
-  padding: var(--ph-space-md) 0 var(--ph-space-xs);
+  padding: var(--ph-space-md) 0 var(--ph-space-sm);
   display: flex;
   flex-direction: column;
   gap: 12px;

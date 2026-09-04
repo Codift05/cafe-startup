@@ -389,33 +389,27 @@ body {
 }
 
 /* ============================================================
- * Layout Utilities
+ * Layout Utilities & Alignment System
  * ============================================================ */
 
 .ph-container {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 0 var(--ph-space-md);
 }
 
-@media (max-width: 768px) {
-  .ph-container {
-    max-width: 600px;
-  }
-}
-
 .ph-container--wide {
-  max-width: 1400px;
+  max-width: 1280px;
 }
 
 .ph-page {
   min-height: 100dvh;
-  padding-bottom: 100px; /* Space for floating bar */
+  padding-bottom: 110px; /* Space for floating bar */
 }
 
 /* ============================================================
- * Floating Bottom Bar
+ * Floating Bottom Bar (Symmetrical alignment)
  * ============================================================ */
 
 .ph-floating-bar {
@@ -424,16 +418,20 @@ body {
   left: 0;
   right: 0;
   z-index: 50;
-  padding: var(--ph-space-md);
+  padding: var(--ph-space-md) 0;
   padding-bottom: max(var(--ph-space-md), env(safe-area-inset-bottom));
   background: var(--ph-bg-card);
   border-top: 1px solid var(--ph-border-light);
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .ph-floating-bar__content {
-  max-width: 480px;
+  width: 100%;
+  max-width: 1120px;
   margin: 0 auto;
+  padding: 0 var(--ph-space-md);
 }
 
 /* ============================================================
