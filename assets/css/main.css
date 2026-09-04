@@ -284,6 +284,44 @@ body {
 }
 
 /* ============================================================
+ * Form Input System
+ * ============================================================ */
+
+.ph-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-family: var(--ph-font-body);
+  font-size: 0.9375rem;
+  color: var(--ph-text);
+  background-color: var(--ph-bg-elevated);
+  border: 1px solid var(--ph-border);
+  border-radius: var(--ph-radius-md);
+  outline: none;
+  transition: all var(--ph-transition-fast);
+}
+
+.ph-input::placeholder {
+  color: var(--ph-text-muted);
+  opacity: 0.7;
+}
+
+.ph-input:focus {
+  border-color: var(--ph-accent);
+  background-color: var(--ph-bg-card);
+  box-shadow: 0 0 0 3px var(--ph-accent-light);
+}
+
+.ph-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ph-input--error {
+  border-color: var(--ph-error);
+  box-shadow: 0 0 0 3px var(--ph-error-light);
+}
+
+/* ============================================================
  * Badge System
  * ============================================================ */
 
