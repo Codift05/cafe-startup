@@ -33,6 +33,8 @@ export function useSupabaseAdmin(): SupabaseClient {
   return _adminClient
 }
 
+export const getSupabaseAdmin = useSupabaseAdmin
+
 /**
  * Get Supabase anon client (for auth-based queries with RLS).
  */
@@ -44,3 +46,4 @@ export function useSupabaseAnon(): SupabaseClient {
     config.public.supabaseAnonKey,
   )
 }
+
