@@ -20,10 +20,10 @@ const quantity = ref(1)
 
 watch(product, (p) => {
   if (!p) return
-  if (p.variants.length > 0) selectedVariant.value = p.variants[0]
+  selectedVariant.value = p.variants[0] ?? null
   for (const group of p.modifier_groups) {
     if (group.is_required && group.modifiers.length > 0) {
-      selectedModifiers.value.set(group.id, [group.modifiers[0].id])
+      selectedModifiers.value.set(group.id, [group.modifiers[0]!.id])
     } else {
       selectedModifiers.value.set(group.id, [])
     }

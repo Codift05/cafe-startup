@@ -3,8 +3,13 @@
 // ============================================================
 
 import { getSupabaseAdmin } from '~/server/utils/supabase'
+import { requireAuth, requireRole } from '~/server/utils/auth'
+import { UserRole } from '~/types/user'
 
 export default defineEventHandler(async (event) => {
+  const user = await requireAuth(event)
+  requireRole(user, [UserRole.BARISTA, UserRole.ADMIN, UserRole.OWNER])
+
   const query = getQuery(event)
   const statusFilter = query.status ? (query.status as string).split(',') : ['PAID', 'PREPARING', 'READY']
 
@@ -33,6 +38,7 @@ export default defineEventHandler(async (event) => {
       )
     `)
     .in('status', statusFilter)
+    .eq('branch_id', user.branch_id)
     .order('created_at', { ascending: true })
 
   if (error) {

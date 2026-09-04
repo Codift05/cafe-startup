@@ -32,7 +32,7 @@ const categories = computed(() => menuData.value?.data?.categories || [])
 // Set default active category
 watch(categories, (cats) => {
   if (cats.length > 0 && !activeCategory.value) {
-    activeCategory.value = cats[0].slug
+    activeCategory.value = cats[0]!.slug
   }
 }, { immediate: true })
 
@@ -75,8 +75,15 @@ function quickAddToCart(e: Event, product: ProductSummary) {
   addItem({
     productId: product.id,
     productName: product.name,
+    productImage: product.image_url,
+    variantId: null,
+    variantName: null,
+    basePrice: product.base_price,
+    variantPrice: 0,
+    modifiers: [],
     unitPrice: product.base_price,
-    quantity: 1
+    quantity: 1,
+    notes: '',
   })
 }
 
@@ -315,7 +322,7 @@ const recommendedItems = computed(() => {
                     v-for="rec in recommendedItems"
                     :key="rec.id"
                     class="recommendation-item"
-                    @click="addItem({ productId: rec.id, productName: rec.name, unitPrice: rec.base_price, quantity: 1 })"
+                    @click="quickAddToCart($event, rec)"
                   >
                     <span>{{ rec.name }}</span>
                     <span class="rec-add-btn">+ {{ formatRupiah(rec.base_price) }}</span>
@@ -326,7 +333,7 @@ const recommendedItems = computed(() => {
               <!-- Filled Cart Items -->
               <div v-else class="desktop-cart-content">
                 <div class="desktop-cart-items-list">
-                  <div v-for="item in cart.items" :key="item.id" class="desktop-cart-item">
+                  <div v-for="item in cart.items" :key="item.cartItemId" class="desktop-cart-item">
                     <div class="desktop-cart-item__info">
                       <h5 class="desktop-cart-item__name">{{ item.productName }}</h5>
                       <span v-if="item.variantName" class="desktop-cart-item__variant">{{ item.variantName }}</span>
@@ -334,9 +341,9 @@ const recommendedItems = computed(() => {
                     </div>
 
                     <div class="desktop-cart-item__controls">
-                      <button class="qty-btn" @click="updateQuantity(item.id, item.quantity - 1)">-</button>
+                      <button class="qty-btn" @click="updateQuantity(item.cartItemId, item.quantity - 1)">-</button>
                       <span class="qty-val">{{ item.quantity }}</span>
-                      <button class="qty-btn" @click="updateQuantity(item.id, item.quantity + 1)">+</button>
+                      <button class="qty-btn" @click="updateQuantity(item.cartItemId, item.quantity + 1)">+</button>
                     </div>
                   </div>
                 </div>

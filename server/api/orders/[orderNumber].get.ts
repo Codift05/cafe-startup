@@ -60,6 +60,8 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Pesanan tidak ditemukan' })
   }
 
+  const payment = order.payments?.[0]
+
   return {
     success: true,
     data: {
@@ -87,13 +89,13 @@ export default defineEventHandler(async (event) => {
           price: mod.price_adjustment_snapshot,
         })),
       })),
-      payment: (order.payments && order.payments.length > 0) ? {
-        id: order.payments[0].id,
-        method: order.payments[0].payment_method,
-        status: order.payments[0].status,
-        amount: order.payments[0].amount,
-        paid_at: order.payments[0].paid_at,
-        snap_token: order.payments[0].snap_token,
+      payment: payment ? {
+        id: payment.id,
+        method: payment.payment_method,
+        status: payment.status,
+        amount: payment.amount,
+        paid_at: payment.paid_at,
+        snap_token: payment.snap_token,
       } : null,
     },
   }

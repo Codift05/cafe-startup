@@ -101,48 +101,15 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  // Handle Digital Payment via Midtrans (QRIS / E_WALLET)
-  let snapToken = existingPayment?.snap_token || null
-  let paymentUrl = existingPayment?.payment_url || null
-
-  if (!snapToken) {
-    try {
-      const snapRes = await createSnapTransaction({
-        order_id: `${order.order_number}-${Date.now()}`,
-        gross_amount: order.total,
-        customer_details: {
-          first_name: order.customer_name,
-          phone: order.customer_phone || undefined,
-        },
-      })
-      snapToken = snapRes.token
-      paymentUrl = snapRes.redirect_url
-    } catch (midtransErr: any) {
-      console.warn('Midtrans client simulation/error mode:', midtransErr.message)
-      // Fallback token for local development mode
-      snapToken = `MOCK_SNAP_${order.order_number}`
-      paymentUrl = '#'
-    }
-  }
-
   if (existingPayment) {
-    await supabase
-      .from('payments')
-      .update({
-        payment_method,
-        snap_token: snapToken,
-        payment_url: paymentUrl,
-      })
-      .eq('id', existingPayment.id)
-
     return {
       success: true,
       data: {
         payment_id: existingPayment.id,
-        payment_method,
+        payment_method: existingPayment.payment_method,
         status: existingPayment.status,
-        snap_token: snapToken,
-        payment_url: paymentUrl,
+        snap_token: existingPayment.snap_token,
+        payment_url: existingPayment.payment_url,
       },
     }
   }
@@ -154,15 +121,37 @@ export default defineEventHandler(async (event) => {
       payment_method,
       status: 'PENDING',
       amount: order.total,
-      snap_token: snapToken,
-      payment_url: paymentUrl,
     })
     .select()
     .single()
 
   if (createPayErr || !payment) {
-    throw createError({ statusCode: 500, message: 'Gagal menyimpan transaksi pembayaran' })
+    throw createError({ statusCode: 409, message: 'Pembayaran sedang diproses. Silakan muat ulang.' })
   }
+
+  let snapToken: string
+  let paymentUrl: string
+  try {
+    const snapRes = await createSnapTransaction({
+      orderId: order.order_number,
+      grossAmount: order.total,
+      customerName: order.customer_name,
+      customerPhone: order.customer_phone || undefined,
+    })
+    snapToken = snapRes.token
+    paymentUrl = snapRes.redirect_url
+  } catch (midtransErr) {
+    await supabase.from('payments').delete().eq('id', payment.id).eq('status', 'PENDING')
+    console.error('Midtrans transaction creation failed:', midtransErr)
+    throw createError({ statusCode: 502, message: 'Gateway pembayaran sedang tidak tersedia' })
+  }
+
+  const { error: updateError } = await supabase
+    .from('payments')
+    .update({ snap_token: snapToken, payment_url: paymentUrl })
+    .eq('id', payment.id)
+
+  if (updateError) throw createError({ statusCode: 500, message: 'Gagal menyimpan detail pembayaran' })
 
   return {
     success: true,

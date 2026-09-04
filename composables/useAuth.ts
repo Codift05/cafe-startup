@@ -14,7 +14,7 @@ export function useAuth() {
 
   const config = useRuntimeConfig()
   const supabaseUrl = config.public.supabaseUrl || ''
-  const supabaseAnonKey = config.public.supabaseKey || ''
+  const supabaseAnonKey = config.public.supabaseAnonKey || ''
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
   async function login(email: string, pass: string) {
@@ -57,11 +57,17 @@ export function useAuth() {
     router.push('/staff/login')
   }
 
+  async function getAccessToken() {
+    const { data } = await supabase.auth.getSession()
+    return data.session?.access_token || null
+  }
+
   return {
     user,
     role,
     isLoading,
     login,
     logout,
+    getAccessToken,
   }
 }

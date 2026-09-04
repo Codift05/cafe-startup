@@ -121,9 +121,7 @@ function openSnap() {
       onError: () => alert('Pembayaran gagal, silakan coba lagi.'),
     })
   } else {
-    alert('Mock Mode: Membuka Payment Simulation Midtrans')
-    // Dev mock auto simulate paid
-    checkStatus()
+    alert('Pembayaran digital belum tersedia. Silakan muat ulang atau hubungi kasir.')
   }
 }
 

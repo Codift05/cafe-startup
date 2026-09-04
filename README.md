@@ -179,6 +179,14 @@ Visit the application in your browser:
 
 ---
 
+## Current Implementation Status
+
+The application currently builds as an integrated prototype. Security hardening, real payment verification, transactional order creation, admin APIs, and end-to-end testing are still required before production use.
+
+See [`docs/AUDIT-REMEDIATION-PLAN.md`](docs/AUDIT-REMEDIATION-PLAN.md) for the verified baseline, audit scope, priorities, and definition of done.
+
+---
+
 ## <img src="https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/user.svg" width="22" height="22" /> Author & Attribution
 
 Developed with precision by **Miftahuddin Arsyad** ([@Codift05](https://github.com/Codift05)).

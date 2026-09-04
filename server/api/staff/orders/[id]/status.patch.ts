@@ -6,12 +6,17 @@ import { z } from 'zod'
 import { getSupabaseAdmin } from '~/server/utils/supabase'
 import { ORDER_TRANSITIONS } from '~/utils/constants'
 import type { OrderStatus } from '~/types/order'
+import { requireAuth, requireRole } from '~/server/utils/auth'
+import { UserRole } from '~/types/user'
 
 const statusSchema = z.object({
   status: z.enum(['PAID', 'PREPARING', 'READY', 'COMPLETED', 'CANCELLED']),
 })
 
 export default defineEventHandler(async (event) => {
+  const user = await requireAuth(event)
+  requireRole(user, [UserRole.BARISTA, UserRole.ADMIN, UserRole.OWNER])
+
   const orderId = getRouterParam(event, 'id')
   const body = await readBody(event)
   const result = statusSchema.safeParse(body)
@@ -28,6 +33,7 @@ export default defineEventHandler(async (event) => {
     .from('orders')
     .select('id, status, order_number')
     .eq('id', orderId)
+    .eq('branch_id', user.branch_id)
     .single()
 
   if (!order) {
@@ -50,6 +56,7 @@ export default defineEventHandler(async (event) => {
     .from('orders')
     .update({ status: targetStatus })
     .eq('id', orderId)
+    .eq('branch_id', user.branch_id)
 
   if (updateErr) {
     throw createError({ statusCode: 500, message: 'Gagal memperbarui status pesanan' })
@@ -61,6 +68,7 @@ export default defineEventHandler(async (event) => {
     from_status: currentStatus,
     to_status: targetStatus,
     source: 'STAFF',
+    changed_by: user.id,
     notes: `Barista KDS update: ${currentStatus} -> ${targetStatus}`,
   })
 

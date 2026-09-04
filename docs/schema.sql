@@ -215,6 +215,7 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 CREATE INDEX IF NOT EXISTS idx_payments_order ON payments(order_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_payments_one_per_order ON payments(order_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 CREATE INDEX IF NOT EXISTS idx_payments_provider_tx ON payments(provider_transaction_id);
 
@@ -223,12 +224,15 @@ CREATE TABLE IF NOT EXISTS payment_events (
     payment_id              UUID NOT NULL REFERENCES payments(id),
     event_type              VARCHAR(50) NOT NULL,
     provider_status         VARCHAR(50),
+    provider_event_id       VARCHAR(100),
     raw_payload             JSONB,
     source                  VARCHAR(20) NOT NULL CHECK (source IN ('WEBHOOK','RECONCILIATION','MANUAL','SYSTEM')),
     created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX IF NOT EXISTS idx_payment_events_payment ON payment_events(payment_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_payment_events_provider_event
+    ON payment_events(payment_id, event_type, provider_event_id);
 
 CREATE TABLE IF NOT EXISTS order_status_history (
     id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -325,6 +329,102 @@ BEGIN
     RETURN next_num;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION create_order_atomic(
+    p_branch_id UUID,
+    p_order_type VARCHAR,
+    p_table_id UUID,
+    p_customer_name VARCHAR,
+    p_customer_phone VARCHAR,
+    p_subtotal INTEGER,
+    p_total INTEGER,
+    p_idempotency_key VARCHAR,
+    p_items JSONB
+) RETURNS JSONB AS $$
+DECLARE
+    created_order orders%ROWTYPE;
+    item JSONB;
+    modifier JSONB;
+    created_item_id UUID;
+    result_body JSONB;
+BEGIN
+    IF p_idempotency_key IS NOT NULL THEN
+        PERFORM pg_advisory_xact_lock(hashtext(p_idempotency_key));
+        SELECT stored.response_body INTO result_body
+        FROM idempotency_keys AS stored
+        WHERE stored.key = p_idempotency_key;
+        IF result_body IS NOT NULL THEN
+            RETURN result_body;
+        END IF;
+    END IF;
+
+    INSERT INTO orders (
+        branch_id, order_number, order_type, table_id, customer_name,
+        customer_phone, status, subtotal, total, idempotency_key
+    ) VALUES (
+        p_branch_id,
+        'PH' || LPAD(next_order_number(p_branch_id, CURRENT_DATE)::TEXT, 4, '0'),
+        p_order_type, p_table_id, p_customer_name, p_customer_phone,
+        'WAITING_PAYMENT', p_subtotal, p_total, p_idempotency_key
+    ) RETURNING * INTO created_order;
+
+    FOR item IN SELECT value FROM jsonb_array_elements(p_items)
+    LOOP
+        INSERT INTO order_items (
+            order_id, product_id, product_variant_id, product_name_snapshot,
+            variant_name_snapshot, base_price_snapshot, variant_price_snapshot,
+            quantity, unit_price, subtotal, notes
+        ) VALUES (
+            created_order.id, (item->>'product_id')::UUID,
+            NULLIF(item->>'variant_id', '')::UUID, item->>'product_name',
+            item->>'variant_name', (item->>'base_price')::INTEGER,
+            (item->>'variant_price')::INTEGER, (item->>'quantity')::INTEGER,
+            (item->>'unit_price')::INTEGER, (item->>'subtotal')::INTEGER,
+            item->>'notes'
+        ) RETURNING id INTO created_item_id;
+
+        FOR modifier IN SELECT value FROM jsonb_array_elements(item->'modifier_details')
+        LOOP
+            INSERT INTO order_item_modifiers (
+                order_item_id, modifier_id, modifier_group_id,
+                modifier_name_snapshot, modifier_group_name_snapshot,
+                price_adjustment_snapshot
+            ) VALUES (
+                created_item_id, (modifier->>'modifier_id')::UUID,
+                (modifier->>'modifier_group_id')::UUID,
+                modifier->>'modifier_name', modifier->>'group_name',
+                (modifier->>'price_adjustment')::INTEGER
+            );
+        END LOOP;
+    END LOOP;
+
+    INSERT INTO order_status_history (order_id, from_status, to_status, source, notes)
+    VALUES (created_order.id, NULL, 'WAITING_PAYMENT', 'SYSTEM', 'Order created');
+
+    result_body := jsonb_build_object(
+        'success', true,
+        'data', jsonb_build_object(
+            'id', created_order.id,
+            'order_number', created_order.order_number,
+            'order_type', created_order.order_type,
+            'status', created_order.status,
+            'total', created_order.total,
+            'created_at', created_order.created_at
+        )
+    );
+
+    IF p_idempotency_key IS NOT NULL THEN
+        INSERT INTO idempotency_keys (key, endpoint, response_status, response_body)
+        VALUES (p_idempotency_key, '/api/orders', 200, result_body)
+        ON CONFLICT (key) DO UPDATE SET response_body = EXCLUDED.response_body;
+    END IF;
+
+    RETURN result_body;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+REVOKE ALL ON FUNCTION create_order_atomic(UUID, VARCHAR, UUID, VARCHAR, VARCHAR, INTEGER, INTEGER, VARCHAR, JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION create_order_atomic(UUID, VARCHAR, UUID, VARCHAR, VARCHAR, INTEGER, INTEGER, VARCHAR, JSONB) TO service_role;
 
 CREATE OR REPLACE FUNCTION validate_order_transition()
 RETURNS TRIGGER AS $$

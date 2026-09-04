@@ -309,6 +309,7 @@ CREATE TABLE payments (
 );
 
 CREATE INDEX idx_payments_order ON payments(order_id);
+CREATE UNIQUE INDEX idx_payments_one_per_order ON payments(order_id);
 CREATE INDEX idx_payments_status ON payments(status);
 CREATE INDEX idx_payments_provider_tx ON payments(provider_transaction_id);
 CREATE INDEX idx_payments_pending ON payments(status, created_at) WHERE status = 'PENDING';
@@ -322,6 +323,7 @@ CREATE TABLE payment_events (
     payment_id              UUID NOT NULL REFERENCES payments(id),
     event_type              VARCHAR(50) NOT NULL,
     provider_status         VARCHAR(50),
+    provider_event_id       VARCHAR(100),
     raw_payload             JSONB,
     source                  VARCHAR(20) NOT NULL CHECK (source IN ('WEBHOOK','RECONCILIATION','MANUAL','SYSTEM')),
     created_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -329,6 +331,8 @@ CREATE TABLE payment_events (
 
 CREATE INDEX idx_payment_events_payment ON payment_events(payment_id);
 CREATE INDEX idx_payment_events_type ON payment_events(event_type);
+CREATE UNIQUE INDEX idx_payment_events_provider_event
+    ON payment_events(payment_id, event_type, provider_event_id);
 ```
 
 ### `order_status_history`
@@ -474,6 +478,12 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 ```
+
+### `create_order_atomic`
+
+Order, item, modifier, status history, dan idempotency response dibuat melalui satu fungsi PostgreSQL. Seluruh perubahan otomatis rollback jika salah satu insert gagal. Advisory transaction lock pada idempotency key mencegah dua request paralel membuat order ganda.
+
+Implementasi executable fungsi ini berada di `docs/schema.sql`. Fungsi hanya dapat dipanggil oleh role server `service_role`.
 
 ### `validate_order_transition`
 

@@ -251,6 +251,16 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const orders = ref<any[]>([])
 let pollTimer: any = null
+const { getAccessToken } = useAuth()
+
+async function authHeaders(): Promise<Record<string, string> | null> {
+  const token = await getAccessToken()
+  if (!token) {
+    await navigateTo('/staff/login')
+    return null
+  }
+  return { Authorization: `Bearer ${token}` }
+}
 
 const baruOrders = computed(() => orders.value.filter(o => o.status === 'PAID'))
 const sedangDibuatOrders = computed(() => orders.value.filter(o => o.status === 'PREPARING'))
@@ -263,7 +273,9 @@ function getElapsedTime(createdAt: string): number {
 
 async function fetchOrders() {
   try {
-    const res = await $fetch<{ success: boolean; data: any[] }>('/api/staff/orders?status=PAID,PREPARING,READY')
+    const headers = await authHeaders()
+    if (!headers) return
+    const res = await $fetch<{ success: boolean; data: any[] }>('/api/staff/orders?status=PAID,PREPARING,READY', { headers })
     orders.value = res.data
   } catch (err) {
     console.error('Fetch KDS error:', err)
@@ -272,8 +284,11 @@ async function fetchOrders() {
 
 async function updateStatus(orderId: string, status: string) {
   try {
+    const headers = await authHeaders()
+    if (!headers) return
     await $fetch(`/api/staff/orders/${orderId}/status`, {
       method: 'PATCH',
+      headers,
       body: { status },
     })
     await fetchOrders()

@@ -34,6 +34,7 @@ export interface ProductSummary {
   availability: ProductAvailability
   has_variants: boolean
   has_modifiers: boolean
+  is_featured?: boolean
 }
 
 export interface Product extends ProductSummary {

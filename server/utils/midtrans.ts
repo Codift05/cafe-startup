@@ -86,7 +86,12 @@ export async function getTransactionStatus(orderId: string): Promise<{
 
   const authString = Buffer.from(`${config.serverKey}:`).toString('base64')
 
-  return await $fetch(`${baseUrl}/v2/${orderId}/status`, {
+  return await $fetch<{
+    transaction_status: string
+    fraud_status: string
+    status_code: string
+    gross_amount: string
+  }>(`${baseUrl}/v2/${orderId}/status` as string, {
     method: 'GET',
     headers: {
       'Authorization': `Basic ${authString}`,
@@ -104,6 +109,7 @@ export function verifyMidtransSignature(notification: {
   signature_key: string
 }): boolean {
   const config = getMidtransConfig()
+  if (!config.serverKey || !notification.signature_key) return false
 
   const hash = crypto
     .createHash('sha512')
@@ -115,7 +121,9 @@ export function verifyMidtransSignature(notification: {
     )
     .digest('hex')
 
-  return hash === notification.signature_key
+  const expected = Buffer.from(hash, 'hex')
+  const received = Buffer.from(notification.signature_key, 'hex')
+  return expected.length === received.length && crypto.timingSafeEqual(expected, received)
 }
 
 /**

@@ -5,24 +5,24 @@
 import { z } from 'zod'
 import { getSupabaseAdmin } from '~/server/utils/supabase'
 import { calculateOrderPrices } from '~/server/utils/price-calculator'
-import { generateOrderNumber } from '~/server/utils/order-number'
 import { DEFAULT_BRANCH_ID } from '~/utils/constants'
+import { MAX_CART_ITEMS, MAX_ITEM_QUANTITY } from '~/utils/constants'
 
 const createOrderSchema = z.object({
   order_type: z.enum(['DINE_IN', 'PICKUP']),
   table_id: z.string().uuid().nullable().optional(),
-  customer_name: z.string().min(1, 'Nama pemesan wajib diisi'),
-  customer_phone: z.string().optional(),
-  idempotency_key: z.string().optional(),
+  customer_name: z.string().trim().min(1, 'Nama pemesan wajib diisi').max(100),
+  customer_phone: z.string().trim().regex(/^[0-9+()\s-]{8,20}$/, 'Nomor telepon tidak valid').optional(),
+  idempotency_key: z.string().min(1).max(64).optional(),
   items: z.array(
     z.object({
       product_id: z.string().uuid(),
       variant_id: z.string().uuid().nullable().optional(),
-      modifier_ids: z.array(z.string().uuid()).default([]),
-      quantity: z.number().int().min(1),
-      notes: z.string().nullable().optional(),
+      modifier_ids: z.array(z.string().uuid()).max(20).refine(ids => new Set(ids).size === ids.length, 'Modifier tidak boleh duplikat').default([]),
+      quantity: z.number().int().min(1).max(MAX_ITEM_QUANTITY),
+      notes: z.string().trim().max(200).nullable().optional(),
     })
-  ).min(1, 'Pesanan minimal berisi 1 item'),
+  ).min(1, 'Pesanan minimal berisi 1 item').max(MAX_CART_ITEMS),
 })
 
 export default defineEventHandler(async (event) => {
@@ -48,20 +48,7 @@ export default defineEventHandler(async (event) => {
 
   const supabase = getSupabaseAdmin()
 
-  // Step 1: Idempotency Check
-  if (idempotency_key) {
-    const { data: existingKey } = await supabase
-      .from('idempotency_keys')
-      .select('response_body')
-      .eq('key', idempotency_key)
-      .single()
-
-    if (existingKey) {
-      return existingKey.response_body
-    }
-  }
-
-  // Step 2: Check Operational Settings (Cafe open / ordering paused)
+  // Check operational settings (cafe open / ordering paused)
   const { data: branch } = await supabase
     .from('branches')
     .select('is_active, ordering_paused, dine_in_enabled, pickup_enabled')
@@ -81,10 +68,27 @@ export default defineEventHandler(async (event) => {
     if (order_type === 'PICKUP' && !branch.pickup_enabled) {
       throw createError({ statusCode: 403, message: 'Layanan Pickup sedang tidak aktif' })
     }
+  } else {
+    throw createError({ statusCode: 503, message: 'Cabang tidak tersedia' })
   }
 
-  // Step 3: Calculate & Validate Prices & Availability Server-side
-  const priceResult = await calculateOrderPrices(supabase, items, DEFAULT_BRANCH_ID)
+  if (order_type === 'DINE_IN') {
+    const { data: table } = await supabase
+      .from('tables')
+      .select('id')
+      .eq('id', table_id)
+      .eq('branch_id', DEFAULT_BRANCH_ID)
+      .eq('status', 'ACTIVE')
+      .single()
+
+    if (!table) {
+      throw createError({ statusCode: 422, message: 'Meja tidak valid atau sedang tidak aktif' })
+    }
+  }
+
+  // Calculate and validate prices and availability server-side
+  const normalizedItems = items.map(item => ({ ...item, variant_id: item.variant_id ?? null }))
+  const priceResult = await calculateOrderPrices(supabase, normalizedItems, DEFAULT_BRANCH_ID)
 
   if (priceResult.sold_out_items.length > 0) {
     const soldOutNames = priceResult.sold_out_items.map(i => i.product_name).join(', ')
@@ -94,102 +98,26 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Step 4: Generate Atomic Order Number (e.g. PH1024)
-  const orderNumber = await generateOrderNumber(supabase, DEFAULT_BRANCH_ID)
+  const atomicItems = priceResult.items.map((item, index) => ({
+    ...item,
+    notes: items[index]?.notes || null,
+  }))
+  const { data, error } = await supabase.rpc('create_order_atomic', {
+    p_branch_id: DEFAULT_BRANCH_ID,
+    p_order_type: order_type,
+    p_table_id: order_type === 'DINE_IN' ? table_id : null,
+    p_customer_name: customer_name,
+    p_customer_phone: customer_phone || null,
+    p_subtotal: priceResult.subtotal,
+    p_total: priceResult.total,
+    p_idempotency_key: idempotency_key || null,
+    p_items: atomicItems,
+  })
 
-  // Step 5: Insert Order into DB
-  const { data: order, error: orderErr } = await supabase
-    .from('orders')
-    .insert({
-      branch_id: DEFAULT_BRANCH_ID,
-      order_number: orderNumber,
-      order_type,
-      table_id: order_type === 'DINE_IN' ? table_id : null,
-      customer_name,
-      customer_phone: customer_phone || null,
-      status: 'WAITING_PAYMENT',
-      subtotal: priceResult.subtotal,
-      total: priceResult.total,
-      idempotency_key: idempotency_key || null,
-    })
-    .select()
-    .single()
-
-  if (orderErr || !order) {
-    console.error('Order creation DB error:', orderErr)
+  if (error || !data) {
+    console.error('Atomic order creation failed:', error)
     throw createError({ statusCode: 500, message: 'Gagal menyimpan pesanan ke database' })
   }
 
-  // Step 6: Insert Order Items & Item Modifiers (with snapshots)
-  for (let i = 0; i < priceResult.items.length; i++) {
-    const calcItem = priceResult.items[i]
-    const origItem = items[i]
-
-    const { data: orderItem, error: itemErr } = await supabase
-      .from('order_items')
-      .insert({
-        order_id: order.id,
-        product_id: calcItem.product_id,
-        product_variant_id: calcItem.variant_id,
-        product_name_snapshot: calcItem.product_name,
-        variant_name_snapshot: calcItem.variant_name,
-        base_price_snapshot: calcItem.base_price,
-        variant_price_snapshot: calcItem.variant_price,
-        quantity: calcItem.quantity,
-        unit_price: calcItem.unit_price,
-        subtotal: calcItem.subtotal,
-        notes: origItem?.notes || null,
-      })
-      .select()
-      .single()
-
-    if (itemErr || !orderItem) {
-      console.error('Order item creation error:', itemErr)
-      continue
-    }
-
-    // Insert Item Modifiers Snapshots
-    for (const mod of calcItem.modifier_details) {
-      await supabase.from('order_item_modifiers').insert({
-        order_item_id: orderItem.id,
-        modifier_id: mod.modifier_id,
-        modifier_name_snapshot: mod.modifier_name,
-        modifier_group_name_snapshot: mod.group_name,
-        price_adjustment_snapshot: mod.price_adjustment,
-      })
-    }
-  }
-
-  // Step 7: Record Order Status History
-  await supabase.from('order_status_history').insert({
-    order_id: order.id,
-    from_status: null,
-    to_status: 'WAITING_PAYMENT',
-    source: 'SYSTEM',
-    notes: 'Order created',
-  })
-
-  const responseBody = {
-    success: true,
-    data: {
-      id: order.id,
-      order_number: order.order_number,
-      order_type: order.order_type,
-      status: order.status,
-      total: order.total,
-      created_at: order.created_at,
-    },
-  }
-
-  // Cache Idempotency Key
-  if (idempotency_key) {
-    await supabase.from('idempotency_keys').insert({
-      key: idempotency_key,
-      endpoint: '/api/orders',
-      response_status: 200,
-      response_body: responseBody,
-    })
-  }
-
-  return responseBody
+  return data
 })
